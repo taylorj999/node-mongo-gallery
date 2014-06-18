@@ -1,11 +1,13 @@
-<html>
-<head><title>Node authentication</title></head>
-<body>
+{% extends 'gallerytemplate.html' %}
+
+{% block title %}Account Login{% endblock %}
+
+{% block main %}
 <h1>Login</h1>
-<div class="alert">{{message}}</div>
+<div id="alert">{{message}}</div>
 
 	<!-- LOGIN FORM -->
-	<form action="/login" method="post">
+	<form name="login" action="/login" method="post">
 		<div>
 			<label>Email</label>
 			<input type="text" name="email">
@@ -22,7 +24,4 @@
 
 	<p>Need an account? <a href="/signup">Signup</a></p>
 	<p>Or go <a href="/">home</a>.</p>
-
-</div>
-</body>
-</html>
+{% endblock %}

@@ -1,50 +1,14 @@
-<!doctype html>
-<html>
-<head>
-	<title>Images List</title>
-	<style>
-		body 		{ padding-top:80px; word-wrap:break-word; }
-	</style>
-</head>
-<body>
-<div class="container">
+{% extends 'gallerytemplate.html' %}
 
-	<div class="alert">{{error}}</div>
-	
-	<div class="page-header text-center">
-		<h1><span class="fa fa-anchor"></span> Profile Page</h1>
-		<a href="/logout" class="btn btn-default btn-sm">Logout</a><br/>
-	</div>
-	
-	
-	<div class="row">
+{% block title %}Gallery{% endblock %}
 
-		{% if user %}
-		<!-- LOCAL INFORMATION -->
-		<div class="col-sm-6">
-			<div class="well">
-				<h3><span class="fa fa-user"></span> Local</h3>
-
-					<p>
-						<strong>id</strong>: {{user._id}}<br>
-						<strong>email</strong>: {{user.local.email}}<br>
-						<strong>password</strong>: {{user.local.password}}
-					</p>
-
-			</div>
+{% block main %}
+	<div id="alert">{{error}}</div>
+	{% for image in images %}
+		<div class="gallery">
+			<a href="/image?id={{image._id.toString()}}">
+			<img src="/thumbnails/{{image.thumbnail}}"/>
+			</a>
 		</div>
-		{% endif %}
-
-		<!-- ARTICLE INFORMATION -->
-		<div class="col-sm-6">
-		<ul>
-		{% for image in images %}
-			<li><a href="/image?id={{image._id.toString()}}"><img src="/thumbnails/{{image.thumbnail}}"/></a></li>
-		{% endfor %}
-		</ul>
-		</div>
-	</div>
-
-</div>
-</body>
-</html>
+	{% endfor %}
+{% endblock %}

@@ -56,7 +56,8 @@ module.exports = exports = function(app, db, passport) {
 					return;
 				} else {
 					res.render('gallery',{'images':data
-										 ,'user':req.user});
+										 ,'user':req.user
+										 ,'tags':req.body.tags});
 					return;
 				}
 			});

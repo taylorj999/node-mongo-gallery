@@ -1,0 +1,82 @@
+html {
+	overflow-y: scroll;
+}
+
+body {
+	margin: 0;
+}
+
+p, td, ul {
+	line-height: 125%;
+}
+
+img {
+	border: 0 none;
+}
+
+#top {
+	height: 60px;
+	margin: auto;
+	width: 100%;
+}
+
+#topnav {
+	background-color: #d3d3d3;
+	height: 25px;
+	width: 100%;
+}
+
+#centerpage {
+    background-color: #ffffff;
+    border-radius: 4px;
+    box-shadow: 0 0 20px 3px #d3d3d3;
+    float: left;
+    margin-left: 10px;
+    margin-top: 10px;
+    padding-bottom: 20px;
+    padding-top: 10px;
+    width: 100%;
+}
+
+#leftcolumn {
+    float: left;
+    margin-left: 10px;
+    margin-right: 4px;
+    width: 170px;
+}
+
+#main {
+    float: left;
+    overflow: hidden;
+    padding: 0 7px 7px;
+    width: 822px;
+}
+
+#footer {
+    color: #909090;
+    font-size: 11px;
+    margin: auto;
+    padding-left: 30px;
+    padding-right: 150px;
+    text-align: center;
+    width: 100%;
+}
+
+div.gallery {
+    margin: 5px;
+    padding: 5px;
+    height: auto;
+    width: auto;
+    float: left;
+    text-align: center;
+}
+
+div.gallery img {
+    display: inline;
+    margin: 5px;
+    border: 1px solid #ffffff;
+}
+
+div.gallery a:hover img {
+    border:1px solid #0000ff;
+}

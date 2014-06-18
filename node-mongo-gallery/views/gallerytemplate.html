@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>{% block title %}Gallery{% endblock %}</title>
+  <link rel="stylesheet" href="/css/gallery.css"/>
+  {% block header %}
+  {% endblock %}
+</head>
+<body>
+	<div id="top">HEADER IMAGE MIGHT GO HERE</div>
+	<div id="topnav">LINKS MIGHT GO HERE</div>
+	<div id="centerpage">
+		<div id="leftcolumn">
+		{% block searchbox %}
+		<form name="search" method="POST" action="/gallery">
+			<input type="text" name="tags" value="{{tags}}"/>
+			<input type="submit" name="submit" value="Search"/>
+		</form>
+		{% endblock %}
+		{% block leftcolumn %}
+		{% endblock %}
+		</div>
+		<div id="main">
+		{% block main %}
+		CONTENT WELL
+		{% endblock %}
+		</div>
+	</div>
+	<div id="footer">{% block footer %}Node-mongo-gallery source located at <a href="http://www.github.com/taylorj999/node-mongo-gallery">Github</a>{% endblock %}</div>
+</body>
+</html>

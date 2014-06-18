@@ -1,22 +1,9 @@
-<!doctype html>
-<html>
-<head>
-	<title>Node Authentication</title>
-	<style>
-		body 		{ padding-top:80px; word-wrap:break-word; }
-	</style>
-</head>
-<body>
-<div class="container">
+{% extends 'gallerytemplate.html' %}
 
-	<div class="alert">{{error}}</div>
-	
-	<div class="page-header text-center">
-		<h1><span class="fa fa-anchor"></span> Profile Page</h1>
-		<a href="/logout" class="btn btn-default btn-sm">Logout</a><br/>
-		<a href="/gallery">View gallery</a>
-	</div>
+{% block title %}Account Login{% endblock %}
 
+{% block main %}
+	<div id="alert">{{error}}</div>
 	<div class="row">
 
 		<!-- LOCAL INFORMATION -->
@@ -32,9 +19,5 @@
 
 			</div>
 		</div>
-
 	</div>
-
-</div>
-</body>
-</html>
+{% endblock %}
