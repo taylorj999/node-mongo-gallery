@@ -38,26 +38,50 @@ module.exports = exports = function(app, db, passport) {
 		res.redirect('/');
 	});
 	
+	app.post('/gallery', function(req,res) {
+		getGallery(req,res,db);
+	});
 	app.get('/gallery', function(req,res) {
+		getGallery(req,res,db);
+	});
+	
+	app.get('/image', function(req,res) {
 		var gallery = new Gallery(db);
-		
-		if (req.body.tags == undefined) {
-			var tags = null;
-		} else {
-			var tags = req.body.tags.split(" ");
-		}
-		var options = {};
-		gallery.covertTagsToParams(tags, function(params) {
+		gallery.getImage(req.query.id, function(err,result) {
+			if (err) {
+				res.render('image',{'error':err.message
+								   ,'image':{}
+								   ,'user':req.user});
+				return;
+			} else {
+				res.render('image',{'image':result
+								   ,'user':req.user});
+				return;
+			}
+		});
+	});
+};
+
+function getGallery(req,res,db) {
+	var gallery = new Gallery(db);
+	
+	if (req.body.tags == undefined) {
+		var tags = null;
+	} else {
+		var tags = req.body.tags.split(" ");
+	}
+	gallery.covertTagsToParams(tags, function(params) {
+		gallery.buildQueryOptions(req.body.page, req.body.sortby, function(options) {
 			gallery.getImages(params, options, function(err, data) {
 				if (err) {
 					res.render('gallery',{'error':err.message 
-										 ,'images':{}
-										 ,'user':req.user});
+									 	,'images':{}
+									 	,'user':req.user});
 					return;
 				} else {
 					res.render('gallery',{'images':data
-										 ,'user':req.user
-										 ,'tags':req.body.tags});
+									 	,'user':req.user
+									 	,'tags':req.body.tags});
 					return;
 				}
 			});

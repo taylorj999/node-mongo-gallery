@@ -1,0 +1,18 @@
+{% extends 'gallerytemplate.html' %}
+
+{% block title %}Image{% endblock %}
+
+{% block leftcolumn %}
+	{% if image %}
+		{% for tag in image.tags %}
+		<div class="tag">{{tag}}</div>
+		{% endfor %}
+	{% endif %}
+{% endblock %}
+
+{% block main %}
+	<div id="alert">{{error}}</div>
+	{% if image %}
+	<img src="/{{image.location}}"/>
+	{% endif %}
+{% endblock %}

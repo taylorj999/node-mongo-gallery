@@ -1,3 +1,4 @@
+var ObjectId = require('mongodb').ObjectID;
 
 function Gallery(db) {
 	"use strict";
@@ -10,9 +11,9 @@ Gallery.prototype.covertTagsToParams = function convertParamsToQuery(tags, callb
 		return callback({});
 	} else {
 		var params = {};
-		params.tags = [];
+		var tagarray = [];
+		var untag = false;
 		tags.forEach(function(item) {
-			console.log(item);
 			switch(item) {
 				case "new":
 					params["new"] = true;
@@ -21,14 +22,40 @@ Gallery.prototype.covertTagsToParams = function convertParamsToQuery(tags, callb
 					params["deleted"] = true;
 					break;
 				case "untagged":
-					params["tags"] = {"$size":0};
+					untag = true;
 					break;
 				default:
-					params.tags[params.tags.length] = item;
+					tagarray[tagarray.length] = item;
 					break;
 			}
 		});
+		if (untag) {
+			params["tags"] = {"$size":0};
+		} else {
+			params["tags"] = {"$all": tagarray};
+		}
+		return callback(params);
 	}
+};
+
+Gallery.prototype.buildQueryOptions = function buildQueryOptions(page,orderby,callback) {
+	var options = {};
+	var thumbsperpage = 20;
+	
+	options["limit"] = thumbsperpage;
+	
+	if (page != undefined) {
+		if (page != NaN) {
+			options["skip"] = thumbsperpage * page;
+		}
+	}
+
+	// order by stuff here
+	if (orderby == undefined) {
+		options["sort"] = [['date','desc']];
+	}
+	
+	callback(options);
 };
 
 Gallery.prototype.getImages = function getImages(params, options, callback) {
@@ -49,6 +76,10 @@ Gallery.prototype.removeTag = function removeTag(image_id, tag, callback) {
     				   ,{$pull:{"tags":tag}}
     				   ,{}
     				   ,callback);
+};
+
+Gallery.prototype.getImage = function getImage(image_id, callback) {
+	this.images.findOne({'_id':new ObjectId(image_id)},{},{},callback);
 };
 
 module.exports.Gallery = Gallery;
