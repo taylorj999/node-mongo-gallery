@@ -49,7 +49,6 @@ img {
     float: left;
     overflow: hidden;
     padding: 0 7px 7px;
-    width: 822px;
 }
 
 #footer {
@@ -63,20 +62,24 @@ img {
 }
 
 div.gallery {
+	width: 900px;
+}
+
+div.galleryimg {
     margin: 5px;
     padding: 5px;
-    height: auto;
-    width: auto;
+    height: 150px;
+    width: 150px;
     float: left;
     text-align: center;
 }
 
-div.gallery img {
+div.galleryimg img {
     display: inline;
     margin: 5px;
     border: 1px solid #ffffff;
 }
 
-div.gallery a:hover img {
+div.galleryimg a:hover img {
     border:1px solid #0000ff;
 }

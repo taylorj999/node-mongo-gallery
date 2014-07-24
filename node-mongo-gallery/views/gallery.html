@@ -4,11 +4,13 @@
 
 {% block main %}
 	<div id="alert">{{error}}</div>
+	<div class="gallery">
 	{% for image in images %}
-		<div class="gallery">
+		<div class="galleryimg">
 			<a href="/image?id={{image._id.toString()}}">
 			<img src="/thumbnails/{{image.thumbnail}}"/>
 			</a>
 		</div>
 	{% endfor %}
+	</div>
 {% endblock %}
