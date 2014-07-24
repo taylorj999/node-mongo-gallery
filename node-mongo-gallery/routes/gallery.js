@@ -31,7 +31,7 @@ Gallery.prototype.covertTagsToParams = function convertParamsToQuery(tags, callb
 		});
 		if (untag) {
 			params["tags"] = {"$size":0};
-		} else {
+		} else if (tagarray.length > 0 ) {
 			params["tags"] = {"$all": tagarray};
 		}
 		return callback(params);
