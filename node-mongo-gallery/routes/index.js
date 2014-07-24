@@ -39,10 +39,30 @@ module.exports = exports = function(app, db, passport) {
 	});
 	
 	app.post('/gallery', function(req,res) {
-		getGallery(req,res,db);
+		var params = {};
+		if (req.body.tags !== undefined) {
+			params.tags = req.body.tags;
+		}
+		if (req.body.page !== undefined) {
+			params.page = req.body.page;
+		}
+		if (req.body.sortby !== undefined) {
+			params.sortby = req.body.sortby;
+		}
+		getGallery(params,req,res,db);
 	});
 	app.get('/gallery', function(req,res) {
-		getGallery(req,res,db);
+		var params = {};
+		if (req.query.tags !== undefined) {
+			params.tags = req.query.tags;
+		}
+		if (req.query.page !== undefined) {
+			params.page = req.query.page;
+		}
+		if (req.query.sortby !== undefined) {
+			params.sortby = req.query.sortby;
+		}
+		getGallery(params,req,res,db);
 	});
 	
 	app.get('/image', function(req,res) {
@@ -62,17 +82,18 @@ module.exports = exports = function(app, db, passport) {
 	});
 };
 
-function getGallery(req,res,db) {
+function getGallery(query_params,req,res,db) {
 	var gallery = new Gallery(db);
-	
-	if (req.body.tags == undefined) {
-		var tags = null;
-	} else {
-		var tags = req.body.tags.split(" ");
+	var tags = null;
+	if (query_params.tags !== undefined) {
+		tags = query_params.tags.split(" ");
+	}
+	if (query_params.page === undefined) {
+		query_params.page = 1;
 	}
 	gallery.covertTagsToParams(tags, function(params) {
-		gallery.buildQueryOptions(req.body.page, req.body.sortby, function(options) {
-			gallery.getImages(params, options, function(err, data) {
+		gallery.buildQueryOptions(query_params.page, query_params.sortby, function(options) {
+			gallery.getImages(params, options, function(err, data, count) {
 				if (err) {
 					res.render('gallery',{'error':err.message 
 									 	,'images':{}
@@ -81,7 +102,9 @@ function getGallery(req,res,db) {
 				} else {
 					res.render('gallery',{'images':data
 									 	,'user':req.user
-									 	,'tags':req.body.tags});
+									 	,'tags':query_params.tags
+									 	,'count':count
+									 	,'page':query_params.page});
 					return;
 				}
 			});

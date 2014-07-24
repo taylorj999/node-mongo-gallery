@@ -44,14 +44,14 @@ Gallery.prototype.buildQueryOptions = function buildQueryOptions(page,orderby,ca
 	
 	options["limit"] = thumbsperpage;
 	
-	if (page != undefined) {
-		if (page != NaN) {
-			options["skip"] = thumbsperpage * page;
+	if (page !== undefined) {
+		if (!isNaN(page)) {
+			options["skip"] = thumbsperpage * (page - 1);
 		}
 	}
 
 	// order by stuff here
-	if (orderby == undefined) {
+	if (orderby === undefined) {
 		options["sort"] = [['date','desc']];
 	}
 	
@@ -59,8 +59,17 @@ Gallery.prototype.buildQueryOptions = function buildQueryOptions(page,orderby,ca
 };
 
 Gallery.prototype.getImages = function getImages(params, options, callback) {
-	this.images.find(params,{},options).toArray(function(err,results) {
-		callback(err,results);
+	var images = this.images;
+	images.find(params).count(function(err, count){
+		if (err) {
+			return callback(err);
+		} else if (count===0) {
+			return callback(null,null,0);
+		} else {
+			images.find(params,{},options).toArray(function(err,results) {
+				callback(err,results,count);
+			});
+		}
 	});
 };
 

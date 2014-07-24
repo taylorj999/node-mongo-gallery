@@ -4,6 +4,7 @@
   <meta charset="utf-8"/>
   <title>{% block title %}Gallery{% endblock %}</title>
   <link rel="stylesheet" href="/css/gallery.css"/>
+  <script type="text/javascript" src="/js/jquery-1.11.1.min.js"></script>
   {% block header %}
   {% endblock %}
 </head>
@@ -13,10 +14,11 @@
 	<div id="centerpage">
 		<div id="leftcolumn">
 		{% block searchbox %}
-		<form name="search" method="POST" action="/gallery">
+		<form name="search" method="GET" action="/gallery">
 			<input type="text" name="tags" value="{{tags}}"/>
-			<input type="submit" name="submit" value="Search"/>
+			<input type="hidden" name="page" value="{{page}}"/>
 		</form>
+		<input type="button" name="submit" value="Search" onClick="document.forms.search.submit();"/>
 		{% endblock %}
 		{% block leftcolumn %}
 		{% endblock %}

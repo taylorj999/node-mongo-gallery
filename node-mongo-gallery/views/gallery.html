@@ -2,6 +2,25 @@
 
 {% block title %}Gallery{% endblock %}
 
+{% block header %}
+<script type="text/javascript" src="/js/jquery.simplePagination.js"></script>
+<link rel="stylesheet" href="/css/simplePagination.css"/>
+<script language="JavaScript">
+$( document ).ready(function() {
+    $("#pagination").pagination({
+        items: {{count}},
+        itemsOnPage: 20,
+        cssStyle: 'light-theme',
+        currentPage: $('input[name="page"]').val(),
+        onPageClick: function (pageNum) {
+        	$('input[name="page"]').val(pageNum);
+        	document.forms.search.submit();
+        }
+    });
+});
+</script>
+{% endblock %}
+
 {% block main %}
 	<div id="alert">{{error}}</div>
 	<div class="gallery">
@@ -12,5 +31,6 @@
 			</a>
 		</div>
 	{% endfor %}
+		<div class="pagination" id="pagination"/>
 	</div>
 {% endblock %}

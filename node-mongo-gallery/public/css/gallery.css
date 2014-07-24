@@ -59,6 +59,7 @@ img {
     padding-right: 150px;
     text-align: center;
     width: 100%;
+    float: left;
 }
 
 div.gallery {
@@ -82,4 +83,9 @@ div.galleryimg img {
 
 div.galleryimg a:hover img {
     border:1px solid #0000ff;
+}
+
+div.pagination {
+	float: right;
+	text-align: center;
 }
