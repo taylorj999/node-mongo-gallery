@@ -1,4 +1,3 @@
-
 /**
  * Module dependencies.
  */
@@ -13,7 +12,8 @@ var express = require('express')
   , swig = require('swig')
   , app = express()
   , passport = require('passport')
-  , flash 	 = require('connect-flash');
+  , flash 	 = require('connect-flash')
+  , config = require('./config');
 
 MongoClient.connect('mongodb://localhost:27017/gallery', function(err, db) {
     "use strict";
@@ -43,7 +43,7 @@ MongoClient.connect('mongodb://localhost:27017/gallery', function(err, db) {
 
 //    app.use(express.logger('dev'));
     // Application routes
-    routes(app, db, passport);
+    routes(app, db, passport, config);
 
 //    app.get('/', routes.index);
     

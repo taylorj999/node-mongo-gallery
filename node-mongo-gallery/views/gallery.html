@@ -9,7 +9,7 @@
 $( document ).ready(function() {
     $("#pagination").pagination({
         items: {{count}},
-        itemsOnPage: 20,
+        itemsOnPage: {{config.imagesPerPage}},
         cssStyle: 'light-theme',
         currentPage: $('input[name="page"]').val(),
         onPageClick: function (pageNum) {

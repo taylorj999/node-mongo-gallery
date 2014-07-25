@@ -1,10 +1,11 @@
-var Gallery = require('./gallery').Gallery;
+var Gallery = require('./gallery').Gallery
+   ,config = require('../config');
 
 var index = function(req, res){
 	  res.render('index', { title: 'Express Swig Test', username: req.username });
 	};
 	
-module.exports = exports = function(app, db, passport) {
+module.exports = exports = function(app, db, passport, config) {
 	"use strict";
 	
 	app.get('/',index);
@@ -141,7 +142,8 @@ function getGallery(query_params,req,res,db) {
 									 	,'user':req.user
 									 	,'tags':query_params.tags
 									 	,'count':count
-									 	,'page':query_params.page});
+									 	,'page':query_params.page
+									 	,'config':config.site});
 					return;
 				}
 			});

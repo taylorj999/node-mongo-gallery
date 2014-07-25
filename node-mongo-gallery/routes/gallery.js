@@ -1,4 +1,5 @@
-var ObjectId = require('mongodb').ObjectID;
+var ObjectId = require('mongodb').ObjectID
+   ,config = require('../config');
 
 function Gallery(db) {
 	"use strict";
@@ -40,14 +41,13 @@ Gallery.prototype.covertTagsToParams = function convertParamsToQuery(tags, callb
 
 Gallery.prototype.buildQueryOptions = function buildQueryOptions(page,orderby,callback) {
 	var options = {};
-	var thumbsperpage = 20;
-	
-	options["limit"] = thumbsperpage;
+
+	options["limit"] = config.site.imagesPerPage;
 	
 	if (page !== undefined) {
 		if (!isNaN(page)) {
 			if (page>0) {
-				options["skip"] = thumbsperpage * (page - 1);
+				options["skip"] = config.site.imagesPerPage * (page - 1);
 			}
 		}
 	}
