@@ -3,11 +3,19 @@
 {% block title %}Image{% endblock %}
 
 {% block leftcolumn %}
+    <div class="taglist">
 	{% if image %}
 		{% for tag in image.tags %}
 		<div class="tag">{{tag}}</div>
 		{% endfor %}
 	{% endif %}
+	</div>
+	<div class="tag">
+		<form name="addtag" method="post" action="" onsubmit="addTag('{{image._id.toString()}}');return false;">
+			<input type="text" name="newtag" value=""/>
+			<input type="button" name="add" class="add-button" onClick="javascript:addTag('{{image._id.toString()}}');"/>
+		</form>
+	</div>
 {% endblock %}
 
 {% block main %}

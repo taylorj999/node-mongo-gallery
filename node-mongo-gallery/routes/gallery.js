@@ -46,7 +46,9 @@ Gallery.prototype.buildQueryOptions = function buildQueryOptions(page,orderby,ca
 	
 	if (page !== undefined) {
 		if (!isNaN(page)) {
-			options["skip"] = thumbsperpage * (page - 1);
+			if (page>0) {
+				options["skip"] = thumbsperpage * (page - 1);
+			}
 		}
 	}
 
@@ -75,14 +77,14 @@ Gallery.prototype.getImages = function getImages(params, options, callback) {
 
 Gallery.prototype.addTag = function addTag(image_id, tag, callback) {
 	this.images.update({'_id':new ObjectId(image_id)}
-	                  ,{$addToSet:{"tags":tag}}
+	                  ,{'$addToSet':{'tags':tag},'$set':{'new':false}}
 	                  ,{}
 	                  ,callback);
 };
 
 Gallery.prototype.removeTag = function removeTag(image_id, tag, callback) {
 	this.images.update({'_id':new ObjectId(image_id)}
-    				   ,{$pull:{"tags":tag}}
+    				   ,{'$pull':{'tags':tag},'$set':{'new':false}}
     				   ,{}
     				   ,callback);
 };

@@ -80,6 +80,24 @@ module.exports = exports = function(app, db, passport) {
 			}
 		});
 	});
+	
+	app.get('/addtag-api', function(req,res) {
+		if ((req.query.id === undefined)||(req.query.newtag === undefined)) {
+			res.jsonp({'status':'error','error':'Invalid parameter error.'});
+			return;
+		} else {
+			var gallery = new Gallery(db);
+			gallery.addTag(req.query.id, req.query.newtag, function(err) {
+				if (err) {
+					res.jsonp({'status':'error','error':err.message});
+					return;
+				} else {
+					res.jsonp({'status':'success'});
+					return;
+				} 
+			});
+		}
+	});
 };
 
 function getGallery(query_params,req,res,db) {

@@ -5,6 +5,12 @@
   <title>{% block title %}Gallery{% endblock %}</title>
   <link rel="stylesheet" href="/css/gallery.css"/>
   <script type="text/javascript" src="/js/jquery-1.11.1.min.js"></script>
+  <script type="text/javascript" src="/js/gallery-api.js"></script>
+  <script language="Javascript">
+      $.ajaxSetup({
+          cache: false
+      });
+  </script>
   {% block header %}
   {% endblock %}
 </head>
