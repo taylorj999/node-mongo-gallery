@@ -98,12 +98,11 @@ div.pagination {
     height: 15px;
     border: 0 none;
     cursor: pointer;
+    float: right;
 }
 
 .delete-button {
-    background-image: url(/images/delete-sm.png);
-    background-size: 100%;
-    background-repeat:no-repeat;
+    float: right;
     width: 15px;
     height: 15px;
     border: 0 none;

@@ -98,6 +98,25 @@ module.exports = exports = function(app, db, passport) {
 			});
 		}
 	});
+
+	app.get('/removetag-api', function(req,res) {
+		if ((req.query.id === undefined)||(req.query.tag === undefined)) {
+			res.jsonp({'status':'error','error':'Invalid parameter error.'});
+			return;
+		} else {
+			var gallery = new Gallery(db);
+			gallery.removeTag(req.query.id, req.query.tag, function(err) {
+				if (err) {
+					res.jsonp({'status':'error','error':err.message});
+					return;
+				} else {
+					res.jsonp({'status':'success'});
+					return;
+				} 
+			});
+		}
+	});
+
 };
 
 function getGallery(query_params,req,res,db) {

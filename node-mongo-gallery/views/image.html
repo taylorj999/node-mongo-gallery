@@ -6,7 +6,7 @@
     <div class="taglist">
 	{% if image %}
 		{% for tag in image.tags %}
-		<div class="tag">{{tag}}</div>
+		<div class="tag" id="{{tag}}">{{tag}} <img src="/images/delete-sm.png" class="delete-button" onClick="javascript:deleteTag('{{image._id.toString()}}','{{tag}}');"/></div>
 		{% endfor %}
 	{% endif %}
 	</div>

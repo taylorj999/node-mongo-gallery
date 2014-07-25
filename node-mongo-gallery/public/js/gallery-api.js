@@ -22,3 +22,27 @@ function addTag(id) {
 	});
 	return false;
 }
+
+function deleteTag(id, tag) {
+	$.ajax({
+		url: "/removetag-api",
+		data: {
+			 'id': id
+		    ,'tag': tag
+		},
+		async: false,
+		dataType: "jsonp",
+		success: function(data) {
+			if (data.status === "success") {
+				tagdiv = "#"+tag;
+				$(tagdiv).remove();
+			} else {
+				$("#alert").append("Error from API: " + data.error);
+			}
+		},
+		error: function(xhr,textStatus,errorThrown) {
+			$("#alert").append("Error on Ajax call:" + textStatus);
+		}
+	});
+	return false;
+}
