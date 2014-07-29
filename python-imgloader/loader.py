@@ -10,8 +10,8 @@ import argparse
 
 # directory locations
 input_dir = "C:/Development/images/input"
-thumbnail_dir = "C:/Development/images/thumbnails"
-done_dir = "C:/Development/images/processed"
+thumbnail_dir = "C:/Development/images/images/thumbnails"
+done_dir = "C:/Development/images/images"
 
 # parse the command line arguments to see if there are
 # any default tags specified
@@ -68,4 +68,5 @@ for fName in onlyfiles:
 			   "tags" : tags}
      coll.insert(imgdoc)
      # and finally move the old file to the new location and name
+     del im
      shutil.move(join(input_dir,fName),join(done_dir,str_id[:8],imgname))
