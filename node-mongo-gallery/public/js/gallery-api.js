@@ -46,3 +46,47 @@ function deleteTag(id, tag) {
 	});
 	return false;
 }
+
+function deleteImage(id, tag) {
+	$.ajax({
+		url: "/markdeleted-api",
+		data: {
+			 'id': id
+		},
+		async: false,
+		dataType: "jsonp",
+		success: function(data) {
+			if (data.status === "success") {
+				$("#alert").append("This image has been marked for deletion.");
+			} else {
+				$("#alert").append("Error from API: " + data.error);
+			}
+		},
+		error: function(xhr,textStatus,errorThrown) {
+			$("#alert").append("Error on Ajax call:" + textStatus);
+		}
+	});
+	return false;
+}
+
+function unDeleteImage(id, tag) {
+	$.ajax({
+		url: "/markundeleted-api",
+		data: {
+			 'id': id
+		},
+		async: false,
+		dataType: "jsonp",
+		success: function(data) {
+			if (data.status === "success") {
+				$("#alert").append("This image is no longer marked for deletion.");
+			} else {
+				$("#alert").append("Error from API: " + data.error);
+			}
+		},
+		error: function(xhr,textStatus,errorThrown) {
+			$("#alert").append("Error on Ajax call:" + textStatus);
+		}
+	});
+	return false;
+}

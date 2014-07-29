@@ -5,7 +5,7 @@ var index = function(req, res){
 	  res.render('index', { title: 'Express Swig Test', username: req.username });
 	};
 	
-module.exports = exports = function(app, db, passport, config) {
+module.exports = exports = function(app, db, passport) {
 	"use strict";
 	
 	app.get('/',index);
@@ -107,6 +107,42 @@ module.exports = exports = function(app, db, passport, config) {
 		} else {
 			var gallery = new Gallery(db);
 			gallery.removeTag(req.query.id, req.query.tag, function(err) {
+				if (err) {
+					res.jsonp({'status':'error','error':err.message});
+					return;
+				} else {
+					res.jsonp({'status':'success'});
+					return;
+				} 
+			});
+		}
+	});
+
+	app.get('/markdeleted-api', function(req,res) {
+		if (req.query.id === undefined) {
+			res.jsonp({'status':'error','error':'Invalid parameter error.'});
+			return;
+		} else {
+			var gallery = new Gallery(db);
+			gallery.markDeleted(req.query.id, function(err) {
+				if (err) {
+					res.jsonp({'status':'error','error':err.message});
+					return;
+				} else {
+					res.jsonp({'status':'success'});
+					return;
+				} 
+			});
+		}
+	});
+	
+	app.get('/markundeleted-api', function(req,res) {
+		if (req.query.id === undefined) {
+			res.jsonp({'status':'error','error':'Invalid parameter error.'});
+			return;
+		} else {
+			var gallery = new Gallery(db);
+			gallery.markUnDeleted(req.query.id, function(err) {
 				if (err) {
 					res.jsonp({'status':'error','error':err.message});
 					return;

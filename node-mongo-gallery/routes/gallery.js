@@ -14,6 +14,11 @@ Gallery.prototype.covertTagsToParams = function convertParamsToQuery(tags, callb
 		var params = {};
 		var tagarray = [];
 		var untag = false;
+		
+		// default to excluding all images that have been marked for deletion
+		// this will be overridden if the user has passed 'deleted' as a parameter
+		params["deleted"] = {'$ne':true};
+		
 		tags.forEach(function(item) {
 			switch(item) {
 				case "new":
@@ -91,6 +96,20 @@ Gallery.prototype.removeTag = function removeTag(image_id, tag, callback) {
 
 Gallery.prototype.getImage = function getImage(image_id, callback) {
 	this.images.findOne({'_id':new ObjectId(image_id)},{},{},callback);
+};
+
+Gallery.prototype.markDeleted = function markDeleted(image_id, callback) {
+	this.images.update({'_id':new ObjectId(image_id)}
+    				  ,{'$set':{'deleted':true}}
+    				  ,{}
+    				  ,callback);
+};
+
+Gallery.prototype.markUnDeleted = function markUnDeleted(image_id, callback) {
+	this.images.update({'_id':new ObjectId(image_id)}
+    				  ,{'$set':{'deleted':false}}
+    				  ,{}
+    				  ,callback);
 };
 
 module.exports.Gallery = Gallery;

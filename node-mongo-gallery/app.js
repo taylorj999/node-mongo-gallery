@@ -43,7 +43,7 @@ MongoClient.connect('mongodb://localhost:27017/gallery', function(err, db) {
 
 //    app.use(express.logger('dev'));
     // Application routes
-    routes(app, db, passport, config);
+    routes(app, db, passport);
 
 //    app.get('/', routes.index);
     

@@ -16,6 +16,15 @@
 			<input type="button" name="add" class="add-button" onClick="javascript:addTag('{{image._id.toString()}}');"/>
 		</form>
 	</div>
+	{% if image.deleted %}
+	<div class="delete">
+		<input type="button" name="undelete" value="Un-Delete Image" class="delete-image" onClick="javascript:unDeleteImage('{{image._id.toString()}}');"/>
+	</div>
+	{% else %}
+	<div class="delete">
+		<input type="button" name="delete" value="Delete Image" class="delete-image" onClick="javascript:deleteImage('{{image._id.toString()}}');"/>
+	</div>
+	{% endif %}
 {% endblock %}
 
 {% block main %}
