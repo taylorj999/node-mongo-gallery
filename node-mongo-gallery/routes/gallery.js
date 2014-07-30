@@ -116,7 +116,13 @@ Gallery.prototype.removeTag = function removeTag(image_id, tag, callback) {
 };
 
 Gallery.prototype.getImage = function getImage(image_id, callback) {
-	this.images.findOne({'_id':new ObjectId(image_id)},{},{},callback);
+//	this.images.findOne({'_id':new ObjectId(image_id)},{},{},callback);
+	var images = this.images;
+	images.findAndModify({'_id':new ObjectId(image_id)}
+	                    ,[]
+	                    ,{'$set':{'last_viewed':new Date()}}
+	                    ,{'new':true}
+	                    ,callback);
 };
 
 Gallery.prototype.markDeleted = function markDeleted(image_id, callback) {

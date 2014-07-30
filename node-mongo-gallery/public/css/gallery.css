@@ -90,6 +90,10 @@ div#pagination {
 	clear: both;
 }
 
+div.imagedetail {
+	font-size: 0.875em;
+}
+
 .add-button {
     background-image: url(/images/add-sm.png);
     background-size: 100%;
@@ -107,4 +111,8 @@ div#pagination {
     height: 15px;
     border: 0 none;
     cursor: pointer;
+}
+
+div.delete {
+	margin-top: 100px;
 }

@@ -3,12 +3,11 @@
 {% block title %}Image{% endblock %}
 
 {% block leftcolumn %}
+  {% if image %}
     <div class="taglist">
-	{% if image %}
 		{% for tag in image.tags %}
 		<div class="tag" id="{{tag}}">{{tag}} <img src="/images/delete-sm.png" class="delete-button" onClick="javascript:deleteTag('{{image._id.toString()}}','{{tag}}');"/></div>
 		{% endfor %}
-	{% endif %}
 	</div>
 	<div class="tag">
 		<form name="addtag" method="post" action="" onsubmit="addTag('{{image._id.toString()}}');return false;">
@@ -25,12 +24,16 @@
 		<input type="button" name="delete" value="Delete Image" class="delete-image" onClick="javascript:deleteImage('{{image._id.toString()}}');"/>
 	</div>
 	{% endif %}
+	<div class="imagedetail">
+		<div id="original">Original: {{image.original}}</div>
+		<div id="uploaded">Uploaded on: {{image.date.toString()}}</div>
+	</div>
+  {% endif %}
 {% endblock %}
 
 {% block main %}
 	<div id="alert">{{error}}</div>
 	{% if image %}
-	<div id="original">{{image.original}}</div>
 	<div id="image">
 		<img src="/{{image.location}}"/>
 	</div>
