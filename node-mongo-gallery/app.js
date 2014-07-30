@@ -15,7 +15,7 @@ var express = require('express')
   , flash 	 = require('connect-flash')
   , config = require('./config/config');
 
-MongoClient.connect('mongodb://localhost:27017/gallery', function(err, db) {
+MongoClient.connect(config.system.mongoConnectString, function(err, db) {
     "use strict";
     if(err) throw err;
 
@@ -36,7 +36,7 @@ MongoClient.connect('mongodb://localhost:27017/gallery', function(err, db) {
     // Express middleware to populate 'req.body' so we can access POST variables
     app.use(express.bodyParser());
 
-    app.use(express.session({secret: 'insertyoursecrethere'}));
+    app.use(express.session({secret: config.system.sessionKey}));
     app.use(passport.initialize());
     app.use(passport.session());
 	app.use(flash()); // use connect-flash for flash messages stored in session
@@ -47,7 +47,7 @@ MongoClient.connect('mongodb://localhost:27017/gallery', function(err, db) {
 
 //    app.get('/', routes.index);
     
-    app.set('port', process.env.PORT || 3000);
+    app.set('port', process.env.PORT || config.system.galleryServerPort);
     app.listen(app.get('port'), function() {
     	console.log('Express server listening on port ' + app.get('port'));
     });
