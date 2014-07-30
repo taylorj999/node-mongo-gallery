@@ -13,7 +13,7 @@ var express = require('express')
   , app = express()
   , passport = require('passport')
   , flash 	 = require('connect-flash')
-  , config = require('./config');
+  , config = require('./config/config');
 
 MongoClient.connect('mongodb://localhost:27017/gallery', function(err, db) {
     "use strict";

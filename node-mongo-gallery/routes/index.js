@@ -1,6 +1,7 @@
 var Gallery = require('./gallery').Gallery
-   ,config = require('../config')
-   ,validator = require('validator');
+   ,config = require('../config/config')
+   ,validator = require('validator')
+   ,sanitizers = require('../config/sanitizers');
 
 var index = function(req, res){
 	  res.render('index', { title: 'Express Swig Test', username: req.username });
@@ -43,7 +44,7 @@ module.exports = exports = function(app, db, passport) {
 	app.post('/gallery', function(req,res) {
 		var params = {};
 		if (req.body.tags !== undefined) {
-			params.tags = sanitize(req.body.tags);
+			params.tags = sanitize(req.body.tags, sanitizers.allow_spaces);
 		}
 		if (req.body.page !== undefined) {
 			params.page = sanitize(req.body.page);
@@ -56,7 +57,7 @@ module.exports = exports = function(app, db, passport) {
 	app.get('/gallery', function(req,res) {
 		var params = {};
 		if (req.query.tags !== undefined) {
-			params.tags = sanitize(req.query.tags);
+			params.tags = sanitize(req.query.tags, sanitizers.allow_spaces);
 		}
 		if (req.query.page !== undefined) {
 			params.page = sanitize(req.query.page);
@@ -189,8 +190,13 @@ function getGallery(query_params,req,res,db) {
 };
 
 //input sanitization; this should cover the majority of user input fields
-function sanitize(x) {
-	return validator.whitelist(x,'abcdefghijklmnopqrstuvwxyz1234567890\\-_\\.');
+//the default sanitizer is defined in /config/sanitizers.js
+function sanitize(x, sanitizer) {
+	if (sanitizer === undefined) {
+		return validator.whitelist(x,sanitizers.standard);
+	} else {
+		return validator.whitelist(x,sanitizer);
+	}
 }
 
 //route middleware to make sure a user is logged in
