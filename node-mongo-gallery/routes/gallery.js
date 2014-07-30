@@ -57,7 +57,7 @@ Gallery.prototype.covertTagsToParams = function convertParamsToQuery(tags, callb
 		} else if ((tagarray_positive.length === 0) && (tagarray_negative.length > 0) ) {
 			params["tags"] = {"$not" : {"$all" : tagarray_negative}};
 		} else if ((tagarray_positive.length > 0) && (tagarray_negative.length > 0)) {
-			params["$and"] = [{"tags" : {"$all": tagarray_positive}}, {"tags":{"$not" : {"$all" : tagarray_negative}}}];
+			params["$and"] = [{"tags" : {"$all": tagarray_positive}}, {"tags":{"$not" : {"$in" : tagarray_negative}}}];
 		}
 		return callback(params);
 	}
