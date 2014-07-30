@@ -1,5 +1,6 @@
 var Gallery = require('./gallery').Gallery
-   ,config = require('../config');
+   ,config = require('../config')
+   ,validator = require('validator');
 
 var index = function(req, res){
 	  res.render('index', { title: 'Express Swig Test', username: req.username });
@@ -42,33 +43,33 @@ module.exports = exports = function(app, db, passport) {
 	app.post('/gallery', function(req,res) {
 		var params = {};
 		if (req.body.tags !== undefined) {
-			params.tags = req.body.tags;
+			params.tags = sanitize(req.body.tags);
 		}
 		if (req.body.page !== undefined) {
-			params.page = req.body.page;
+			params.page = sanitize(req.body.page);
 		}
 		if (req.body.sortby !== undefined) {
-			params.sortby = req.body.sortby;
+			params.sortby = sanitize(req.body.sortby);
 		}
 		getGallery(params,req,res,db);
 	});
 	app.get('/gallery', function(req,res) {
 		var params = {};
 		if (req.query.tags !== undefined) {
-			params.tags = req.query.tags;
+			params.tags = sanitize(req.query.tags);
 		}
 		if (req.query.page !== undefined) {
-			params.page = req.query.page;
+			params.page = sanitize(req.query.page);
 		}
 		if (req.query.sortby !== undefined) {
-			params.sortby = req.query.sortby;
+			params.sortby = sanitize(req.query.sortby);
 		}
 		getGallery(params,req,res,db);
 	});
 	
 	app.get('/image', function(req,res) {
 		var gallery = new Gallery(db);
-		gallery.getImage(req.query.id, function(err,result) {
+		gallery.getImage(sanitize(req.query.id), function(err,result) {
 			if (err) {
 				res.render('image',{'error':err.message
 								   ,'image':{}
@@ -88,12 +89,12 @@ module.exports = exports = function(app, db, passport) {
 			return;
 		} else {
 			var gallery = new Gallery(db);
-			gallery.addTag(req.query.id, req.query.newtag, function(err) {
+			gallery.addTag(sanitize(req.query.id), sanitize(req.query.newtag), function(err) {
 				if (err) {
 					res.jsonp({'status':'error','error':err.message});
 					return;
 				} else {
-					res.jsonp({'status':'success'});
+					res.jsonp({'status':'success','tag':sanitize(req.query.newtag)});
 					return;
 				} 
 			});
@@ -106,12 +107,12 @@ module.exports = exports = function(app, db, passport) {
 			return;
 		} else {
 			var gallery = new Gallery(db);
-			gallery.removeTag(req.query.id, req.query.tag, function(err) {
+			gallery.removeTag(sanitize(req.query.id), sanitize(req.query.tag), function(err) {
 				if (err) {
 					res.jsonp({'status':'error','error':err.message});
 					return;
 				} else {
-					res.jsonp({'status':'success'});
+					res.jsonp({'status':'success', 'tag':sanitize(req.query.tag)});
 					return;
 				} 
 			});
@@ -124,7 +125,7 @@ module.exports = exports = function(app, db, passport) {
 			return;
 		} else {
 			var gallery = new Gallery(db);
-			gallery.markDeleted(req.query.id, function(err) {
+			gallery.markDeleted(sanitize(req.query.id), function(err) {
 				if (err) {
 					res.jsonp({'status':'error','error':err.message});
 					return;
@@ -142,7 +143,7 @@ module.exports = exports = function(app, db, passport) {
 			return;
 		} else {
 			var gallery = new Gallery(db);
-			gallery.markUnDeleted(req.query.id, function(err) {
+			gallery.markUnDeleted(sanitize(req.query.id), function(err) {
 				if (err) {
 					res.jsonp({'status':'error','error':err.message});
 					return;
@@ -186,6 +187,11 @@ function getGallery(query_params,req,res,db) {
 		});
 	});
 };
+
+//input sanitization; this should cover the majority of user input fields
+function sanitize(x) {
+	return validator.whitelist(x,'abcdefghijklmnopqrstuvwxyz1234567890\\-_\\.');
+}
 
 //route middleware to make sure a user is logged in
 function isLoggedIn(req, res, next) {

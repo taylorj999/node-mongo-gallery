@@ -10,7 +10,7 @@ function addTag(id) {
 		dataType: "jsonp",
 		success: function(data) {
 			if (data.status === "success") {
-				$(".taglist").append("<div class=\"tag\">"+newtag+"</div>");
+				$(".taglist").append("<div class=\"tag\">"+data.tag+"</div>");
 				$("input[name=newtag]").val('');
 			} else {
 				$("#alert").append("Error from API: " + data.error);
@@ -34,7 +34,7 @@ function deleteTag(id, tag) {
 		dataType: "jsonp",
 		success: function(data) {
 			if (data.status === "success") {
-				tagdiv = "#"+tag;
+				tagdiv = "#"+data.tag;
 				$(tagdiv).remove();
 			} else {
 				$("#alert").append("Error from API: " + data.error);

@@ -30,6 +30,9 @@
 {% block main %}
 	<div id="alert">{{error}}</div>
 	{% if image %}
-	<img src="/{{image.location}}"/>
+	<div id="original">{{image.original}}</div>
+	<div id="image">
+		<img src="/{{image.location}}"/>
+	</div>
 	{% endif %}
 {% endblock %}
