@@ -1,6 +1,8 @@
 var sanitizers = {};
 
-sanitizers.standard = 'abcdefghijklmnopqrstuvwxyz1234567890\\-_\\.';
-sanitizers.allow_spaces = 'abcdefghijklmnopqrstuvwxyz1234567890\\-_\\. ';
+//standard is alphanumeric, '-','_' and '.'
+sanitizers.standard = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890\\-_\\.';
+//allow_spaces is for the search parameter field, since search tags are space separated
+sanitizers.allow_spaces = ' abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890\\-_\\.';
 
 module.exports = sanitizers;

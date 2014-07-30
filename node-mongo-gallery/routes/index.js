@@ -44,33 +44,33 @@ module.exports = exports = function(app, db, passport) {
 	app.post('/gallery', function(req,res) {
 		var params = {};
 		if (req.body.tags !== undefined) {
-			params.tags = sanitize(req.body.tags, sanitizers.allow_spaces);
+			params.tags = sanitize(req.body.tags, sanitizers.allow_spaces).toLowerCase();
 		}
 		if (req.body.page !== undefined) {
 			params.page = sanitize(req.body.page);
 		}
 		if (req.body.sortby !== undefined) {
-			params.sortby = sanitize(req.body.sortby);
+			params.sortby = sanitize(req.body.sortby).toLowerCase();
 		}
 		getGallery(params,req,res,db);
 	});
 	app.get('/gallery', function(req,res) {
 		var params = {};
 		if (req.query.tags !== undefined) {
-			params.tags = sanitize(req.query.tags, sanitizers.allow_spaces);
+			params.tags = sanitize(req.query.tags, sanitizers.allow_spaces).toLowerCase();
 		}
 		if (req.query.page !== undefined) {
 			params.page = sanitize(req.query.page);
 		}
 		if (req.query.sortby !== undefined) {
-			params.sortby = sanitize(req.query.sortby);
+			params.sortby = sanitize(req.query.sortby).toLowerCase();
 		}
 		getGallery(params,req,res,db);
 	});
 	
 	app.get('/image', function(req,res) {
 		var gallery = new Gallery(db);
-		gallery.getImage(sanitize(req.query.id), function(err,result) {
+		gallery.getImage(sanitize(req.query.id).toLowerCase(), function(err,result) {
 			if (err) {
 				res.render('image',{'error':err.message
 								   ,'image':{}
@@ -90,7 +90,9 @@ module.exports = exports = function(app, db, passport) {
 			return;
 		} else {
 			var gallery = new Gallery(db);
-			gallery.addTag(sanitize(req.query.id), sanitize(req.query.newtag), function(err) {
+			gallery.addTag(sanitize(req.query.id).toLowerCase()
+					      ,sanitize(req.query.newtag).toLowerCase()
+					      ,function(err) {
 				if (err) {
 					res.jsonp({'status':'error','error':err.message});
 					return;
@@ -108,7 +110,9 @@ module.exports = exports = function(app, db, passport) {
 			return;
 		} else {
 			var gallery = new Gallery(db);
-			gallery.removeTag(sanitize(req.query.id), sanitize(req.query.tag), function(err) {
+			gallery.removeTag(sanitize(req.query.id).toLowerCase()
+					         ,sanitize(req.query.tag).toLowerCase()
+					         ,function(err) {
 				if (err) {
 					res.jsonp({'status':'error','error':err.message});
 					return;
@@ -126,7 +130,7 @@ module.exports = exports = function(app, db, passport) {
 			return;
 		} else {
 			var gallery = new Gallery(db);
-			gallery.markDeleted(sanitize(req.query.id), function(err) {
+			gallery.markDeleted(sanitize(req.query.id).toLowerCase(), function(err) {
 				if (err) {
 					res.jsonp({'status':'error','error':err.message});
 					return;
@@ -144,7 +148,7 @@ module.exports = exports = function(app, db, passport) {
 			return;
 		} else {
 			var gallery = new Gallery(db);
-			gallery.markUnDeleted(sanitize(req.query.id), function(err) {
+			gallery.markUnDeleted(sanitize(req.query.id).toLowerCase(), function(err) {
 				if (err) {
 					res.jsonp({'status':'error','error':err.message});
 					return;
@@ -190,7 +194,7 @@ function getGallery(query_params,req,res,db) {
 };
 
 //input sanitization; this should cover the majority of user input fields
-//the default sanitizer is defined in /config/sanitizers.js
+//the sanitizers are defined in /config/sanitizers.js
 function sanitize(x, sanitizer) {
 	if (sanitizer === undefined) {
 		return validator.whitelist(x,sanitizers.standard);
@@ -211,7 +215,7 @@ function isLoggedIn(req, res, next) {
 }
 
 //route middleware to reject API calls if it doesn't find
-//a login session for the requestor
+//a login session for the requester
 function isLoggedInAPI(req, res, next) {
 	if (req.isAuthenticated())
 		return next();
