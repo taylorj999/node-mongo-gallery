@@ -185,7 +185,8 @@ function getGallery(query_params,req,res,db) {
 									 	,'tags':query_params.tags
 									 	,'count':count
 									 	,'page':query_params.page
-									 	,'config':config.site});
+									 	,'config':config.site
+									 	,'sortby':query_params.sortby});
 					return;
 				}
 			});

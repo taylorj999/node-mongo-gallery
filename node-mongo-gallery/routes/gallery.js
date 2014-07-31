@@ -81,6 +81,16 @@ Gallery.prototype.buildQueryOptions = function buildQueryOptions(page,orderby,ca
 	// order by stuff here
 	if (orderby === undefined) {
 		options["sort"] = [['date','desc']];
+	} else {
+		switch (orderby) {
+			case "last":
+				options["sort"] = [['last_viewed','asc']];
+				break;
+			case "recent":
+			default:
+				options["sort"] = [['date','desc']];
+				break;
+		}
 	}
 	
 	callback(options);
