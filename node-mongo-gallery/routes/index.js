@@ -3,10 +3,6 @@ var Gallery = require('./gallery').Gallery
    ,validator = require('validator')
    ,sanitizers = require('../config/sanitizers');
 
-var index = function(req, res){
-	  res.render('index', { title: 'Express Swig Test', username: req.username });
-	};
-	
 module.exports = exports = function(app, db, passport) {
 	"use strict";
 	
