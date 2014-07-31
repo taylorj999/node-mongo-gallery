@@ -10,7 +10,9 @@ var index = function(req, res){
 module.exports = exports = function(app, db, passport) {
 	"use strict";
 	
-	app.get('/',index);
+	app.get('/',function(req,res) {
+		res.render('index', {'user':req.user});
+	});
 	
 	app.get('/login', function(req,res) {
 		res.render('login', { message: req.flash('loginMessage')});

@@ -16,7 +16,15 @@
 </head>
 <body>
 	<div id="top">HEADER IMAGE MIGHT GO HERE</div>
-	<div id="topnav">LINKS MIGHT GO HERE</div>
+	<div id="topnav">
+		{% if user %}
+			Welcome, {{user.local.email}}.
+			<a href="/profile" class="navlink">My Profile</a>
+			<a href="/logout" class="navlink">Log Out</a>
+		{% else %}
+			<a href="/login" class="navlink">Log In</a> or <a href="/signup" class="navlink">Create Account</a>
+		{% endif %}
+	</div>
 	<div id="centerpage">
 		<div id="leftcolumn">
 		{% block searchbox %}

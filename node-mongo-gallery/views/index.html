@@ -1,11 +1,11 @@
-<html>
-<head><title>{{title}}</title></head>
-<body>
-<h1>Node authentication</h1>
-<p>Login or Register links:</p>
-<ul>
-<li><a href="/login">Login</a></li>
-<li><a href="/signup">Signup</a></li>
-</ul>
-</body>
-</html>
+{% extends 'gallerytemplate.html' %}
+
+{% block title %}Welcome{% endblock %}
+
+{% block main %}
+	<div id="alert">{{error}}</div>
+	<div id="welcome">
+		Welcome to node-mongo-gallery, whose name generally sums up precisely what it's about.
+		You can begin searching the gallery contents using the search box in the left nav.
+	</div>	
+{% endblock %}

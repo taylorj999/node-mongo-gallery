@@ -6,23 +6,25 @@
   {% if image %}
     <div class="taglist">
 		{% for tag in image.tags %}
-		<div class="tag" id="{{tag}}">{{tag}} <img src="/images/delete-sm.png" class="delete-button" onClick="javascript:deleteTag('{{image._id.toString()}}','{{tag}}');"/></div>
+		<div class="tag" id="{{tag}}">{{tag}} {% if user %}<img src="/images/delete-sm.png" class="delete-button" onClick="javascript:deleteTag('{{image._id.toString()}}','{{tag}}');"/>{% endif %}</div>
 		{% endfor %}
 	</div>
-	<div class="tag">
-		<form name="addtag" method="post" action="" onsubmit="addTag('{{image._id.toString()}}');return false;">
-			<input type="text" name="newtag" value=""/>
-			<input type="button" name="add" class="add-button" onClick="javascript:addTag('{{image._id.toString()}}');"/>
-		</form>
-	</div>
-	{% if image.deleted %}
-	<div class="delete">
-		<input type="button" name="undelete" value="Un-Delete Image" class="delete-image" onClick="javascript:unDeleteImage('{{image._id.toString()}}');"/>
-	</div>
-	{% else %}
-	<div class="delete">
-		<input type="button" name="delete" value="Delete Image" class="delete-image" onClick="javascript:deleteImage('{{image._id.toString()}}');"/>
-	</div>
+	{% if user %}
+		<div class="tag">
+			<form name="addtag" method="post" action="" onsubmit="addTag('{{image._id.toString()}}');return false;">
+				<input type="text" name="newtag" value=""/>
+				<input type="button" name="add" class="add-button" onClick="javascript:addTag('{{image._id.toString()}}');"/>
+			</form>
+		</div>
+		{% if image.deleted %}
+		<div class="delete">
+			<input type="button" name="undelete" value="Un-Delete Image" class="delete-image" onClick="javascript:unDeleteImage('{{image._id.toString()}}');"/>
+		</div>
+		{% else %}
+		<div class="delete">
+			<input type="button" name="delete" value="Delete Image" class="delete-image" onClick="javascript:deleteImage('{{image._id.toString()}}');"/>
+		</div>
+		{% endif %}
 	{% endif %}
 	<div class="imagedetail">
 		<div id="original">Original: {{image.original}}</div>

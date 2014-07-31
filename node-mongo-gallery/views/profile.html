@@ -1,6 +1,6 @@
 {% extends 'gallerytemplate.html' %}
 
-{% block title %}Account Login{% endblock %}
+{% block title %}Account Profile{% endblock %}
 
 {% block main %}
 	<div id="alert">{{error}}</div>
@@ -12,7 +12,7 @@
 				<h3><span class="fa fa-user"></span> Local</h3>
 
 					<p>
-						<strong>id</strong>: {{user._id}}<br>
+						<strong>id</strong>: {{user._id.toString()}}<br>
 						<strong>email</strong>: {{user.local.email}}<br>
 						<strong>password</strong>: {{user.local.password}}
 					</p>
