@@ -1,0 +1,7 @@
+{
+	"directories":{
+		"input_dir" : "C:/Development/images/input",
+		"done_dir" : "C:/Development/images/images",
+		"thumbnail_dir" : "C:/Development/images/images/thumbnails"
+	}
+}

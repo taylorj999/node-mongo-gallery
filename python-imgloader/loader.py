@@ -7,11 +7,14 @@ from bson.objectid import ObjectId
 import datetime
 import shutil
 import argparse
+import json
 
-# directory locations
-input_dir = "C:/Development/images/input"
-thumbnail_dir = "C:/Development/images/images/thumbnails"
-done_dir = "C:/Development/images/images"
+# load directory locations
+jf = open("../node-mongo-gallery/config/directory.json")
+dirs = json.load(jf);
+input_dir = dirs['directories']['input_dir']
+thumbnail_dir = dirs['directories']['thumbnail_dir']
+done_dir = dirs['directories']['done_dir']
 
 # parse the command line arguments to see if there are
 # any default tags specified
