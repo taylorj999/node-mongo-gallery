@@ -104,7 +104,7 @@ Gallery.prototype.getImages = function getImages(params, options, callback) {
 		} else if (count===0) {
 			return callback(null,null,0);
 		} else {
-			images.find(params,{},options).toArray(function(err,results) {
+			images.find(params,{'thumbnail':true},options).toArray(function(err,results) {
 				callback(err,results,count);
 			});
 		}
