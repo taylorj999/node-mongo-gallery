@@ -63,8 +63,6 @@ Gallery.prototype.covertTagsToParams = function convertParamsToQuery(tags, callb
 	}
 };
 
-// {'$and':[{'tags':{'$all':['a','b']}},{'tags':{'$not':{'$all':['c','d']}}}]}
-
 Gallery.prototype.buildQueryOptions = function buildQueryOptions(page,orderby,callback) {
 	var options = {};
 

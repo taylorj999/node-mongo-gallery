@@ -5,7 +5,7 @@
 {% block leftcolumn %}
   {% if image %}
     <div class="taglist">
-		{% for tag in image.tags %}
+		{% for tag in image.tags.sort() %}
 		<div class="tag" id="{{tag}}">{{tag}} {% if user %}<img src="/images/delete-sm.png" class="delete-button" onClick="javascript:deleteTag('{{image._id.toString()}}','{{tag}}');"/>{% endif %}</div>
 		{% endfor %}
 	</div>
@@ -28,7 +28,7 @@
 	{% endif %}
 	<div class="imagedetail">
 		<div id="original">Original: {{image.original}}</div>
-		<div id="uploaded">Uploaded on: {{image.date.toString()}}</div>
+		<div id="uploaded">Uploaded on: {{image.date|date('Y-m-d')}}</div>
 	</div>
   {% endif %}
 {% endblock %}
@@ -39,5 +39,26 @@
 	<div id="image">
 		<img src="/{{image.location}}"/>
 	</div>
+		{% if config.allowComments %}
+			<div id="comments">
+				{% for comment in image.comments %}
+				<div id="comment">
+					<div id="commentuser">{{comment.user}}</div>
+					<div id="commentdate">Posted: {{comment.date|date('Y-m-d')}}</div>
+					<div id="commenttext">{{comment.comment}}</div>
+				</div>
+				{% endfor %}
+				{% if user || config.allowAnonymousComments %}
+				<div id="comment">
+					<form name="comment" action="/addComment" method="POST">
+						<div id="commentuser">{% if user %}{{user.local.email}}{% else %}Anonymous{% endif %}</div>
+						<div id="commenttext"><textarea cols="50" rows="6" name="comment"></textarea></div>
+						<input type="submit" name="Add Comment" value="Add Comment"/>
+						<input type="hidden" name="id" value="{{image._id.toString()}}"/>
+					</form>
+				</div>
+				{% endif %}
+			</div>
+		{% endif %}
 	{% endif %}
 {% endblock %}

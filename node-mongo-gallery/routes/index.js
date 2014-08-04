@@ -1,4 +1,5 @@
 var Gallery = require('./gallery').Gallery
+   ,Comments = require('./comments').Comments
    ,config = require('../config/config')
    ,validator = require('validator')
    ,sanitizers = require('../config/sanitizers');
@@ -71,12 +72,35 @@ module.exports = exports = function(app, db, passport) {
 		gallery.getImage(sanitize(req.query.id).toLowerCase(), function(err,result) {
 			if (err) {
 				res.render('image',{'error':err.message
-								   ,'image':{}
-								   ,'user':req.user});
+								   ,'image':result
+								   ,'user':req.user
+								   ,'config':config.site});
 				return;
 			} else {
 				res.render('image',{'image':result
-								   ,'user':req.user});
+								   ,'user':req.user
+								   ,'config':config.site});
+				return;
+			}
+		});
+	});
+	
+	app.post('/addComment',function(req,res) {
+		var comments = new Comments(db);
+		comments.addComment(req.user
+				           ,sanitize(req.body.comment,sanitizers.comments)
+				           ,sanitize(req.body.id).toLowerCase()
+				           ,function(err,result) {
+			if (err) {
+				res.render('image',{'error':err.message
+								   ,'image':result
+								   ,'user':req.user
+								   ,'config':config.site});
+				return;
+			} else {
+				res.render('image',{'image':result
+								   ,'user':req.user
+								   ,'config':config.site});
 				return;
 			}
 		});

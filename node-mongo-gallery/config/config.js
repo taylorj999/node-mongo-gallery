@@ -15,4 +15,8 @@ config.site = {};
 // number of thumbnails to show per page
 config.site.imagesPerPage = 20;
 
+// comment permissions
+config.site.allowComments = true;
+config.site.allowAnonymousComments = true;
+
 module.exports = config;
