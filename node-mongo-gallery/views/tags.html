@@ -1,0 +1,11 @@
+{% extends 'gallerytemplate.html' %}
+
+{% block title %}Tags data{% endblock %}
+
+{% block main %}
+<ul>
+{% for tag in taglist %}
+<li>{{tag._id}} ({{tag.count}})</li>
+{% endfor %}
+</ul>
+{% endblock %}
