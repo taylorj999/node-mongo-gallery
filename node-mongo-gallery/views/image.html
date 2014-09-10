@@ -16,6 +16,12 @@
 				<input type="button" name="add" class="add-button" onClick="javascript:addTag('{{image._id.toString()}}');"/>
 			</form>
 		</div>
+		{% if image.tags.indexOf('series') >=0 %}
+		<form name="setsequence" method="post" action="" onsubmit="setSequence('{{image._id.toString()}}');return false;">
+			<input type="text" name="sequence" value="{{image.sequence}}"/>
+			<input type="button" name="set" value="set" class="set-button" onClick="javascript:setSequence('{{image._id.toString()}}');"/>
+		</form>
+		{% endif %}
 		{% if image.deleted %}
 		<div class="delete">
 			<input type="button" name="undelete" value="Un-Delete Image" class="delete-image" onClick="javascript:unDeleteImage('{{image._id.toString()}}');"/>

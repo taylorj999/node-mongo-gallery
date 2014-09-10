@@ -1,5 +1,6 @@
 var Gallery = require('./gallery').Gallery
    ,Comments = require('./comments').Comments
+   ,Tags = require('./tags').Tags
    ,config = require('../config/config')
    ,validator = require('validator')
    ,sanitizers = require('../config/sanitizers');
@@ -85,6 +86,22 @@ module.exports = exports = function(app, db, passport) {
 		});
 	});
 	
+	app.get('/taglist', function(req,res) {
+		var tags = new Tags(db);
+		tags.getTaglist(function (err, result) {
+			if (err) {
+				res.render('tags',{'error':err.message
+								  ,'user':req.user
+								  ,'config':config.site});
+				return;
+			} else {
+				res.render('tags',{'taglist':result
+								  ,'user':req.user
+								  ,'config':config.site});
+			}
+		});
+	});
+	
 	app.post('/addComment',function(req,res) {
 		var comments = new Comments(db);
 		comments.addComment(req.user
@@ -110,6 +127,9 @@ module.exports = exports = function(app, db, passport) {
 		if ((req.query.id === undefined)||(req.query.newtag === undefined)) {
 			res.jsonp({'status':'error','error':'Invalid parameter error.'});
 			return;
+		} else if (config.system.reservedTags.indexOf(sanitize(req.query.newtag).toLowerCase()) >= 0) {
+			res.jsonp({'status':'error','error':'Reserved keyword.'});
+			return;
 		} else {
 			var gallery = new Gallery(db);
 			gallery.addTag(sanitize(req.query.id).toLowerCase()
@@ -119,13 +139,33 @@ module.exports = exports = function(app, db, passport) {
 					res.jsonp({'status':'error','error':err.message});
 					return;
 				} else {
-					res.jsonp({'status':'success','tag':sanitize(req.query.newtag)});
+					res.jsonp({'status':'success','tag':sanitize(req.query.newtag).toLowerCase()});
 					return;
 				} 
 			});
 		}
 	});
 
+	app.get('/setsequence-api', function(req,res) {
+		if ((req.query.id === undefined)||(req.query.sequence === undefined)) {
+			res.jsonp({'status':'error','error':'Invalid parameter error.'});
+			return;
+		} else {
+			var gallery = new Gallery(db);
+			gallery.setSequence(sanitize(req.query.id).toLowerCase()
+					           ,sanitize(req.query.sequence)
+					           ,function(err) {
+				if (err) {
+					res.jsonp({'status':'error','error':err.message});
+					return;
+				} else {
+					res.jsonp({'status':'success'});
+					return;
+				} 
+			});
+		}
+	});
+	
 	app.get('/removetag-api', function(req,res) {
 		if ((req.query.id === undefined)||(req.query.tag === undefined)) {
 			res.jsonp({'status':'error','error':'Invalid parameter error.'});

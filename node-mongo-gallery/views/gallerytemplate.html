@@ -34,6 +34,7 @@
 			<select name="sortby">
 				<option value="recent" {% if sortby == 'recent' %}SELECTED{% endif %}>Most recent</option>
 				<option value="last" {% if sortby == 'last' %}SELECTED{% endif %}>Least viewed</option>
+				<option value="series" {% if sortby == 'series' %}SELECTED{% endif %}>Series sequence</option>
 			</select>
 		</form>
 		<input type="button" name="submit" value="Search" onClick="document.forms.search.submit();"/>

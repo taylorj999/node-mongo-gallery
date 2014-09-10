@@ -90,3 +90,27 @@ function unDeleteImage(id, tag) {
 	});
 	return false;
 }
+
+function setSequence(id) {
+	var sequence = $("input[name=sequence]").val();
+	$.ajax({
+		url: "/setsequence-api",
+		data: {
+			 'id': id
+			,'sequence':sequence
+		},
+		async: false,
+		dataType: "jsonp",
+		success: function(data) {
+			if (data.status === "success") {
+				$("#alert").append("Sequence updated.");
+			} else {
+				$("#alert").append("Error from API: " + data.error);
+			}
+		},
+		error: function(xhr,textStatus,errorThrown) {
+			$("#alert").append("Error on Ajax call:" + textStatus);
+		}
+	});
+	return false;
+}

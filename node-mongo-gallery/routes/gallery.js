@@ -84,6 +84,9 @@ Gallery.prototype.buildQueryOptions = function buildQueryOptions(page,orderby,ca
 			case "last":
 				options["sort"] = [['last_viewed','asc']];
 				break;
+			case "series":
+				options["sort"] = [['sequence','asc']];
+				break;
 			case "recent":
 			default:
 				options["sort"] = [['date','desc']];
@@ -107,6 +110,13 @@ Gallery.prototype.getImages = function getImages(params, options, callback) {
 			});
 		}
 	});
+};
+
+Gallery.prototype.setSequence = function setSequence(image_id, sequence, callback) {
+	this.images.update({'_id':new ObjectId(image_id)}
+	                  ,{'$set':{'sequence':sequence}}
+	                  ,{}
+	                  ,callback);
 };
 
 Gallery.prototype.addTag = function addTag(image_id, tag, callback) {
@@ -142,7 +152,7 @@ Gallery.prototype.markDeleted = function markDeleted(image_id, callback) {
 
 Gallery.prototype.markUnDeleted = function markUnDeleted(image_id, callback) {
 	this.images.update({'_id':new ObjectId(image_id)}
-    				  ,{'$set':{'deleted':false}}
+					  ,{'$set':{'deleted':false}}
     				  ,{}
     				  ,callback);
 };
