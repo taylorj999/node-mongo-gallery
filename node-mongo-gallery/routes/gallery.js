@@ -113,6 +113,7 @@ Gallery.prototype.getImages = function getImages(params, options, callback) {
 };
 
 Gallery.prototype.setSequence = function setSequence(image_id, sequence, callback) {
+	sequence = sequence*1; // explicitly type to integer
 	this.images.update({'_id':new ObjectId(image_id)}
 	                  ,{'$set':{'sequence':sequence}}
 	                  ,{}

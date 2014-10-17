@@ -93,6 +93,10 @@ function unDeleteImage(id, tag) {
 
 function setSequence(id) {
 	var sequence = $("input[name=sequence]").val();
+	if (isNaN(sequence)||(sequence===undefined)) {
+		$("#alert").append("Sequence must be a number.");
+		return false;
+	}
 	$.ajax({
 		url: "/setsequence-api",
 		data: {
