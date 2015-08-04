@@ -1,5 +1,20 @@
 {% extends 'gallerytemplate.html' %}
 
+{% block header %}
+<script language="JavaScript">
+	$(document).ready(function() {
+		var containerWidth = $("div#image").width();
+		var containedWidth = $("img#mainimage").width();
+		if (containedWidth > containerWidth) {
+			var containedHeight = $("img#mainimage").height();
+			var newHeight = ( containedHeight * containerWidth) / containedWidth; 
+			$("img#mainimage").height(newHeight);
+			$("img#mainimage").width(containerWidth);
+		}
+	});
+</script>
+{% endblock %}
+
 {% block title %}Image{% endblock %}
 
 {% block leftcolumn %}
@@ -43,7 +58,7 @@
 	<div id="alert">{{error}}</div>
 	{% if image %}
 	<div id="image">
-		<img src="/{{image.location}}"/>
+		<img id="mainimage" src="/{{image.location}}"/>
 	</div>
 		{% if config.allowComments %}
 			<div id="comments">

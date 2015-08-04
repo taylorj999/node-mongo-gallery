@@ -20,6 +20,10 @@ div#top {
 	width: 100%;
 }
 
+div#image {
+	width: 100%;
+}
+
 div#topnav {
 	background-color: #d3d3d3;
 	height: 25px;
@@ -35,7 +39,7 @@ div#centerpage {
     margin-top: 10px;
     padding-bottom: 20px;
     padding-top: 10px;
-    width: 100%;
+    width: 99%;
 }
 
 div#leftcolumn {
