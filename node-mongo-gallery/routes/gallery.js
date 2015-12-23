@@ -85,7 +85,7 @@ Gallery.prototype.buildQueryOptions = function buildQueryOptions(page,orderby,ca
 				options["sort"] = [['last_viewed','asc']];
 				break;
 			case "series":
-				options["sort"] = [['sequence','asc']];
+				options["sort"] = [['series.sequence','asc']];
 				break;
 			case "recent":
 			default:
@@ -112,12 +112,74 @@ Gallery.prototype.getImages = function getImages(params, options, callback) {
 	});
 };
 
-Gallery.prototype.setSequence = function setSequence(image_id, sequence, callback) {
+Gallery.prototype.updateSeriesCount = function updateSeriesCount(series_name, callback) {
+	this.images.aggregate([{'$match':{'series.name':series_name}},
+	                       {'$group':{'_id':'series_name','count':{$sum:1}}}])
+	           .toArray(function(err,result) {
+	        	   if (err) {
+	        		   return callback(err);
+	        	   } else if (count===0) {
+	        		   return callback(null);
+	        	   } else {
+	        		   this.images.update({'series.name':series_name}
+	        			   				 ,{'series.count':result[0].count}
+	        			   				 ,{}
+	        		   					 ,callback);
+	        	   }
+	           });
+}
+
+Gallery.prototype.updateSeriesCount = function updateSeriesCount(series_name, callback) {
+	var self=this;
+	if (series_name===undefined) {
+		return callback(null);
+	} else {
+	  self.images.aggregate([{'$match':{'series.name':series_name}},
+	                         {'$group':{'_id':'series.name','count':{'$sum':1}}}]
+	                       ,function(err,result) {
+	        	   if (err) {
+	        		   return callback(err);
+	        	   } else if (result[0].count===0) {
+	        		   return callback(null);
+	        	   } else {
+	        		   self.images.update({'series.name':series_name}
+	        			   				 ,{'$set':{'series.count':result[0].count}}
+	        			   				 ,{'multi':true}
+	        		   					 ,callback);
+	        	   }
+	           });
+	}
+};
+
+Gallery.prototype.setSequence = function setSequence(image_id, sequence, series_name, callback) {
 	sequence = sequence*1; // explicitly type to integer
-	this.images.update({'_id':new ObjectId(image_id)}
-	                  ,{'$set':{'sequence':sequence}}
-	                  ,{}
-	                  ,callback);
+	var self=this;
+	this.images.findAndModify({'_id':new ObjectId(image_id)}
+						     ,{}
+	                         ,{'$set':{'series.sequence':sequence,
+	                	               'series.name':series_name}}
+	                         ,{}
+	                         ,function(err,object) {
+	                        	 if (err) {
+	                        		 return callback(err);
+	                        	 } else {
+	                        		 // update the count for the series to maintain denormalization
+	                        		 // with better data integrity this could be updated
+	                        		 // to check only when the series name is changed
+	                        		 // but this way it will 'clean up' any entries without counts
+	                        		 self.updateSeriesCount(object.series.name
+	                        				               ,function (err) {
+		                        			 				 if (err) {
+			                        			 				return callback(err);
+			                        			 			 } else if (series_name != object.series.name){
+			                        			 				this.updateSeriesCount(series_name
+			                        			 			  			              ,callback);
+			                        			 			 } else {
+			                        			 				return callback(null);
+			                        			 			 }
+			                        		 			   });
+	                        	 }
+	                         });
 };
 
 Gallery.prototype.addTag = function addTag(image_id, tag, callback) {
@@ -142,6 +204,15 @@ Gallery.prototype.getImage = function getImage(image_id, callback) {
 	                    ,{'$set':{'last_viewed':new Date()}}
 	                    ,{'new':true}
 	                    ,callback);
+};
+
+Gallery.prototype.getSeriesImage = function getSeriesImage(series, sequence, callback) {
+	sequence = sequence * 1;
+	this.images.findAndModify({'series.name':series,'series.sequence':sequence}
+							  ,[]
+							  ,{'$set':{'last_viewed':new Date()}}
+							  ,{'new':true}
+							  ,callback);
 };
 
 Gallery.prototype.markDeleted = function markDeleted(image_id, callback) {

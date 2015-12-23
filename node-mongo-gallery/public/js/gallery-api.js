@@ -93,8 +93,13 @@ function unDeleteImage(id, tag) {
 
 function setSequence(id) {
 	var sequence = $("input[name=sequence]").val();
+	var series_name = $("input[name=series_name]").val();
 	if (isNaN(sequence)||(sequence===undefined)) {
 		$("#alert").append("Sequence must be a number.");
+		return false;
+	}
+	if (series_name===undefined) {
+		$("#alert").append("Series name cannot be empty.");
 		return false;
 	}
 	$.ajax({
@@ -102,6 +107,7 @@ function setSequence(id) {
 		data: {
 			 'id': id
 			,'sequence':sequence
+			,'series_name':series_name
 		},
 		async: false,
 		dataType: "jsonp",

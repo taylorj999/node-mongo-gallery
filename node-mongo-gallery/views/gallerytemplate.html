@@ -28,9 +28,11 @@
 	<div id="centerpage">
 		<div id="leftcolumn">
 		{% block searchbox %}
+		<div style="font-size: 12px; text-align: center">Image Search</div>
 		<form name="search" method="GET" action="/gallery">
 			<input type="text" name="tags" value="{{tags}}"/>
 			<input type="hidden" name="page" value="{{page}}"/>
+			<div style="font-size: 12px; text-align: center">Search Order</div>
 			<select name="sortby">
 				<option value="recent" {% if sortby == 'recent' %}SELECTED{% endif %}>Most recent</option>
 				<option value="last" {% if sortby == 'last' %}SELECTED{% endif %}>Least viewed</option>

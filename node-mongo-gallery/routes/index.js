@@ -70,20 +70,41 @@ module.exports = exports = function(app, db, passport) {
 	
 	app.get('/image', function(req,res) {
 		var gallery = new Gallery(db);
-		gallery.getImage(sanitize(req.query.id).toLowerCase(), function(err,result) {
-			if (err) {
-				res.render('image',{'error':err.message
-								   ,'image':result
-								   ,'user':req.user
-								   ,'config':config.site});
-				return;
-			} else {
-				res.render('image',{'image':result
-								   ,'user':req.user
-								   ,'config':config.site});
-				return;
-			}
-		});
+		if ((req.query.id === undefined)&&(req.query.series === undefined)) {
+			res.render('image',{'error':'Invalid parameter error'});
+		} else if (req.query.id === undefined) {
+			gallery.getSeriesImage(sanitize(req.query.series).toLowerCase()
+					              ,sanitize(req.query.sequence)
+					              ,function(err,result) {
+									if (err) {
+										res.render('image',{'error':err.message
+											               ,'image':result
+											               ,'user':req.user
+											               ,'config':config.site});
+									    return;
+									} else {
+										res.render('image',{'image':result
+								                           ,'user':req.user
+								                           ,'config':config.site});
+										return;
+									}
+			});
+		} else {
+			gallery.getImage(sanitize(req.query.id).toLowerCase(), function(err,result) {
+				if (err) {
+					res.render('image',{'error':err.message
+								   	   ,'image':result
+								       ,'user':req.user
+								       ,'config':config.site});
+				    return;
+			    } else {
+				    res.render('image',{'image':result
+								       ,'user':req.user
+								       ,'config':config.site});
+				    return;
+			    }
+			});
+		}
 	});
 	
 	app.get('/taglist', function(req,res) {
@@ -154,6 +175,7 @@ module.exports = exports = function(app, db, passport) {
 			var gallery = new Gallery(db);
 			gallery.setSequence(sanitize(req.query.id).toLowerCase()
 					           ,sanitize(req.query.sequence)
+					           ,sanitize(req.query.series_name)
 					           ,function(err) {
 				if (err) {
 					res.jsonp({'status':'error','error':err.message});
