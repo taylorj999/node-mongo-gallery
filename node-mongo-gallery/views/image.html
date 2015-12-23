@@ -1,8 +1,9 @@
 {% extends 'gallerytemplate.html' %}
 
 {% block header %}
+<script type="text/javascript" src="/js/imagesloaded.pkgd.min.js"></script>
 <script language="JavaScript">
-	$(document).ready(function() {
+	function fitMainImageToScreen() {
 		var containerWidth = $("div#image").width();
 		var containedWidth = $("img#mainimage").width();
 		if (containedWidth > containerWidth) {
@@ -11,6 +12,9 @@
 			$("img#mainimage").height(newHeight);
 			$("img#mainimage").width(containerWidth);
 		}
+	}
+	$(document).ready(function() {
+		$("img#mainimage").imagesLoaded().done(function(instance) { fitMainImageToScreen(); });
 	});
 </script>
 {% endblock %}
