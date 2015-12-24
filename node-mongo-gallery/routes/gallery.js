@@ -167,12 +167,18 @@ Gallery.prototype.setSequence = function setSequence(image_id, sequence, series_
 	                        		 // with better data integrity this could be updated
 	                        		 // to check only when the series name is changed
 	                        		 // but this way it will 'clean up' any entries without counts
-	                        		 self.updateSeriesCount(object.series.name
+	                        		 var old_name;
+	                        		 if (object.series === undefined) {
+	                        			 old_name = null;
+	                        		 } else {
+	                        			 old_name = object.series.name;
+	                        		 }
+	                        		 self.updateSeriesCount(old_name
 	                        				               ,function (err) {
 		                        			 				 if (err) {
 			                        			 				return callback(err);
-			                        			 			 } else if (series_name != object.series.name){
-			                        			 				this.updateSeriesCount(series_name
+			                        			 			 } else if (series_name != old_name){
+			                        			 				self.updateSeriesCount(series_name
 			                        			 			  			              ,callback);
 			                        			 			 } else {
 			                        			 				return callback(null);
