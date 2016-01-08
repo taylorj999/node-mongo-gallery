@@ -134,7 +134,7 @@ Gallery.prototype.updateSeriesCount = function updateSeriesCount(series_name, ca
 	if (series_name===undefined || series_name===null) {
 		return callback(null);
 	} else {
-	  self.images.aggregate([{'$match':{'series.name':series_name}},
+	  self.images.aggregate([{'$match':{'series.name':series_name,'deleted':{'$ne':true}}},
 	                         {'$group':{'_id':'series.name','count':{'$sum':1}}}]
 	                       ,function(err,result) {
 	        	   if (err) {
