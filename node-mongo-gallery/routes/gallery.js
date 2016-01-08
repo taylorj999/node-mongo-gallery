@@ -131,7 +131,7 @@ Gallery.prototype.updateSeriesCount = function updateSeriesCount(series_name, ca
 
 Gallery.prototype.updateSeriesCount = function updateSeriesCount(series_name, callback) {
 	var self=this;
-	if (series_name===undefined) {
+	if (series_name===undefined || series_name===null) {
 		return callback(null);
 	} else {
 	  self.images.aggregate([{'$match':{'series.name':series_name}},

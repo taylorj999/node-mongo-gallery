@@ -75,7 +75,7 @@
 {% block main %}
 	<div id="alert">{{error}}</div>
 	{% if image %}
-		{% if image.series.count > 0 %}
+		{% if image.series.count >= 1 %}
 		<div id="seriesnav">
 			{% if image.series.sequence > 1 %}
 				<a href="image?series={{image.series.name}}&sequence={{image.series.sequence - 1}}">&lt;&lt;&lt; Prev</a> 
