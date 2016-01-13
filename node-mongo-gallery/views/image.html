@@ -26,7 +26,7 @@
     <div class="taglist">
     	<span style="font-size: 12px">Image Tags</span>
 		{% for tag in image.tags.sort() %}
-		<div class="tag" id="{{tag}}">{{tag}} {% if user %}<img src="/images/delete-sm.png" class="delete-button" onClick="javascript:deleteTag('{{image._id.toString()}}','{{tag}}');"/>{% endif %}</div>
+		<div class="tag" id="{{tag}}"><a href="/gallery?tags={{tag}}&page=1">{{tag}}</a> {% if user %}<img src="/images/delete-sm.png" class="delete-button" onClick="javascript:deleteTag('{{image._id.toString()}}','{{tag}}');"/>{% endif %}</div>
 		{% endfor %}
 	</div>
 	{% if user %}
@@ -89,6 +89,17 @@
 	<div id="image">
 		<img id="mainimage" src="/{{image.location}}"/>
 	</div>
+		{% if image.series.count >= 1 %}
+		<div id="seriesnav">
+			{% if image.series.sequence > 1 %}
+				<a href="image?series={{image.series.name}}&sequence={{image.series.sequence - 1}}">&lt;&lt;&lt; Prev</a> 
+			{% endif %}
+			{{image.series.sequence}} of {{image.series.count}}
+			{% if image.series.sequence < image.series.count %}
+				<a href="image?series={{image.series.name}}&sequence={{image.series.sequence + 1}}">Next &gt;&gt;&gt;</a>
+			{% endif %}
+		</div>
+		{% endif %}
 		{% if config.allowComments %}
 			<div id="comments">
 				{% for comment in image.comments %}
