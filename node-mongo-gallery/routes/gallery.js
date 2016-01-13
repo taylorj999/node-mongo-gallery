@@ -114,23 +114,6 @@ Gallery.prototype.getImages = function getImages(params, options, callback) {
 };
 
 Gallery.prototype.updateSeriesCount = function updateSeriesCount(series_name, callback) {
-	this.images.aggregate([{'$match':{'series.name':series_name}},
-	                       {'$group':{'_id':'series_name','count':{$sum:1}}}])
-	           .toArray(function(err,result) {
-	        	   if (err) {
-	        		   return callback(err);
-	        	   } else if (count===0) {
-	        		   return callback(null);
-	        	   } else {
-	        		   this.images.update({'series.name':series_name}
-	        			   				 ,{'series.count':result[0].count}
-	        			   				 ,{}
-	        		   					 ,callback);
-	        	   }
-	           });
-}
-
-Gallery.prototype.updateSeriesCount = function updateSeriesCount(series_name, callback) {
 	var self=this;
 	if (series_name===undefined || series_name===null) {
 		return callback(null);
