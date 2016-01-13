@@ -99,13 +99,14 @@ Gallery.prototype.buildQueryOptions = function buildQueryOptions(page,orderby,ca
 
 Gallery.prototype.getImages = function getImages(params, options, callback) {
 	var images = this.images;
-	images.find(params).count(function(err, count){
+	var imgquery = images.find(params,{'thumbnail':true},options);
+	imgquery.count(function(err,count) {
 		if (err) {
 			return callback(err);
 		} else if (count===0) {
 			return callback(null,null,0);
 		} else {
-			images.find(params,{'thumbnail':true},options).toArray(function(err,results) {
+			imgquery.toArray(function(err,results) {
 				callback(err,results,count);
 			});
 		}
