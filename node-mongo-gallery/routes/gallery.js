@@ -99,7 +99,7 @@ Gallery.prototype.buildQueryOptions = function buildQueryOptions(page,orderby,ca
 
 Gallery.prototype.getImages = function getImages(params, options, callback) {
 	var images = this.images;
-	var imgquery = images.find(params,{'thumbnail':true},options);
+	var imgquery = images.find(params,{'thumbnail':true,'tags':true},options);
 	imgquery.count(function(err,count) {
 		if (err) {
 			return callback(err);
@@ -107,7 +107,17 @@ Gallery.prototype.getImages = function getImages(params, options, callback) {
 			return callback(null,null,0);
 		} else {
 			imgquery.toArray(function(err,results) {
-				callback(err,results,count);
+				if (err) {
+					return callback(err);
+				} else {
+					var taglist = {};
+					for (x=0;x<results.length;x++) {
+						for(y=0;y<results[x].tags.length;y++) {
+							taglist[results[x].tags[y]]=1;
+						}
+					}
+					callback(err,results,count,Object.keys(taglist));
+				}
 			});
 		}
 	});

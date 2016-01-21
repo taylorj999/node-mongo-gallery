@@ -257,7 +257,7 @@ function getGallery(query_params,req,res,db) {
 	}
 	gallery.covertTagsToParams(tags, function(params) {
 		gallery.buildQueryOptions(query_params.page, query_params.sortby, function(options) {
-			gallery.getImages(params, options, function(err, data, count) {
+			gallery.getImages(params, options, function(err, data, count, taglist) {
 				if (err) {
 					res.render('gallery',{'error':err.message 
 									 	,'images':{}
@@ -270,7 +270,8 @@ function getGallery(query_params,req,res,db) {
 									 	,'count':count
 									 	,'page':query_params.page
 									 	,'config':config.site
-									 	,'sortby':query_params.sortby});
+									 	,'sortby':query_params.sortby
+									 	,'taglist':taglist});
 					return;
 				}
 			});

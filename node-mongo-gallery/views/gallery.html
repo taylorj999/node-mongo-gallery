@@ -21,6 +21,14 @@ $( document ).ready(function() {
 </script>
 {% endblock %}
 
+{% block leftcolumn %}
+	<div class="taglist">
+	{% for tag in taglist.sort() %}
+		<div class="tag" id="{{tag}}"><a href="/gallery?tags={{tag}}&page=1">{{tag}}</a> {% if user %}<img src="/images/delete-sm.png" class="delete-button" onClick="javascript:deleteTag('{{image._id.toString()}}','{{tag}}');"/>{% endif %}</div>
+	{% endfor %}
+	</div>
+{% endblock %}
+
 {% block main %}
 	<div id="alert">{{error}}</div>
 	<div class="gallery">
