@@ -63,8 +63,6 @@ Gallery.prototype.covertTagsToParams = function convertParamsToQuery(tags, callb
 	}
 };
 
-// {'$and':[{'tags':{'$all':['a','b']}},{'tags':{'$not':{'$all':['c','d']}}}]}
-
 Gallery.prototype.buildQueryOptions = function buildQueryOptions(page,orderby,callback) {
 	var options = {};
 
@@ -86,6 +84,9 @@ Gallery.prototype.buildQueryOptions = function buildQueryOptions(page,orderby,ca
 			case "last":
 				options["sort"] = [['last_viewed','asc']];
 				break;
+			case "series":
+				options["sort"] = [['series.sequence','asc']];
+				break;
 			case "recent":
 			default:
 				options["sort"] = [['date','desc']];
@@ -98,17 +99,87 @@ Gallery.prototype.buildQueryOptions = function buildQueryOptions(page,orderby,ca
 
 Gallery.prototype.getImages = function getImages(params, options, callback) {
 	var images = this.images;
-	images.find(params).count(function(err, count){
+	var imgquery = images.find(params,{'thumbnail':true,'tags':true},options);
+	imgquery.count(function(err,count) {
 		if (err) {
 			return callback(err);
 		} else if (count===0) {
 			return callback(null,null,0);
 		} else {
-			images.find(params,{},options).toArray(function(err,results) {
-				callback(err,results,count);
+			imgquery.toArray(function(err,results) {
+				if (err) {
+					return callback(err);
+				} else {
+					var taglist = {};
+					for (x=0;x<results.length;x++) {
+						for(y=0;y<results[x].tags.length;y++) {
+							taglist[results[x].tags[y]]=1;
+						}
+					}
+					callback(err,results,count,Object.keys(taglist));
+				}
 			});
 		}
 	});
+};
+
+Gallery.prototype.updateSeriesCount = function updateSeriesCount(series_name, callback) {
+	var self=this;
+	if (series_name===undefined || series_name===null) {
+		return callback(null);
+	} else {
+	  self.images.aggregate([{'$match':{'series.name':series_name,'deleted':{'$ne':true}}},
+	                         {'$group':{'_id':'series.name','count':{'$sum':1}}}]
+	                       ,function(err,result) {
+	        	   if (err) {
+	        		   return callback(err);
+	        	   } else if (result[0].count===0) {
+	        		   return callback(null);
+	        	   } else {
+	        		   self.images.update({'series.name':series_name}
+	        			   				 ,{'$set':{'series.count':result[0].count}}
+	        			   				 ,{'multi':true}
+	        		   					 ,callback);
+	        	   }
+	           });
+	}
+};
+
+Gallery.prototype.setSequence = function setSequence(image_id, sequence, series_name, callback) {
+	sequence = sequence*1; // explicitly type to integer
+	var self=this;
+	this.images.findAndModify({'_id':new ObjectId(image_id)}
+						     ,{}
+	                         ,{'$set':{'series.sequence':sequence,
+	                	               'series.name':series_name}}
+	                         ,{}
+	                         ,function(err,object) {
+	                        	 if (err) {
+	                        		 return callback(err);
+	                        	 } else {
+	                        		 // update the count for the series to maintain denormalization
+	                        		 // with better data integrity this could be updated
+	                        		 // to check only when the series name is changed
+	                        		 // but this way it will 'clean up' any entries without counts
+	                        		 var old_name;
+	                        		 if (object.series === undefined) {
+	                        			 old_name = null;
+	                        		 } else {
+	                        			 old_name = object.series.name;
+	                        		 }
+	                        		 self.updateSeriesCount(old_name
+	                        				               ,function (err) {
+		                        			 				 if (err) {
+			                        			 				return callback(err);
+			                        			 			 } else if (series_name != old_name){
+			                        			 				self.updateSeriesCount(series_name
+			                        			 			  			              ,callback);
+			                        			 			 } else {
+			                        			 				return callback(null);
+			                        			 			 }
+			                        		 			   });
+	                        	 }
+	                         });
 };
 
 Gallery.prototype.addTag = function addTag(image_id, tag, callback) {
@@ -135,6 +206,38 @@ Gallery.prototype.getImage = function getImage(image_id, callback) {
 	                    ,callback);
 };
 
+Gallery.prototype.getSeriesList = function getSeriesList(page, limit, callback) {
+	this.images.aggregate([{'$match':{'deleted':{'$ne':true},'tags':'series','series.name':{'$exists':true}}},
+	                       {'$sort':{'series.sequence':1}},
+	                       {'$group':{'_id':'$series.name'
+	                                 ,'count':{'$sum':1}
+	                                 ,'thumbnail':{'$first':'$thumbnail'}
+	                                 ,'imageid':{'$first':'$_id'}}},
+	                       {'$sort':{'_id':1}}],function(err,result) {
+							if (err) {
+								return callback(err);
+							} else {
+								var sLength = result.length;
+								if (sLength > (page * limit)) {
+									result.length = page * limit;
+								}
+								if (page > 1) {
+									result = result.splice((page-1)*limit,(page*limit)-1);
+								}
+								return callback(null,result,sLength);
+							}
+						 });
+};
+
+Gallery.prototype.getSeriesImage = function getSeriesImage(series, sequence, callback) {
+	sequence = sequence * 1;
+	this.images.findAndModify({'series.name':series,'series.sequence':sequence}
+							  ,[]
+							  ,{'$set':{'last_viewed':new Date()}}
+							  ,{'new':true}
+							  ,callback);
+};
+
 Gallery.prototype.markDeleted = function markDeleted(image_id, callback) {
 	this.images.update({'_id':new ObjectId(image_id)}
     				  ,{'$set':{'deleted':true}}
@@ -144,7 +247,7 @@ Gallery.prototype.markDeleted = function markDeleted(image_id, callback) {
 
 Gallery.prototype.markUnDeleted = function markUnDeleted(image_id, callback) {
 	this.images.update({'_id':new ObjectId(image_id)}
-    				  ,{'$set':{'deleted':false}}
+					  ,{'$set':{'deleted':false}}
     				  ,{}
     				  ,callback);
 };

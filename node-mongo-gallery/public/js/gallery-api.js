@@ -90,3 +90,37 @@ function unDeleteImage(id, tag) {
 	});
 	return false;
 }
+
+function setSequence(id) {
+	var sequence = $("input[name=sequence]").val();
+	var series_name = $("input[name=series_name]").val();
+	if (isNaN(sequence)||(sequence===undefined)) {
+		$("#alert").append("Sequence must be a number.");
+		return false;
+	}
+	if (series_name===undefined) {
+		$("#alert").append("Series name cannot be empty.");
+		return false;
+	}
+	$.ajax({
+		url: "/setsequence-api",
+		data: {
+			 'id': id
+			,'sequence':sequence
+			,'series_name':series_name
+		},
+		async: false,
+		dataType: "jsonp",
+		success: function(data) {
+			if (data.status === "success") {
+				$("#alert").append("Sequence updated.");
+			} else {
+				$("#alert").append("Error from API: " + data.error);
+			}
+		},
+		error: function(xhr,textStatus,errorThrown) {
+			$("#alert").append("Error on Ajax call:" + textStatus);
+		}
+	});
+	return false;
+}
