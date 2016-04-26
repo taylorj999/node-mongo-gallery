@@ -109,7 +109,7 @@ module.exports = exports = function(app, db, passport) {
 	
 	app.get('/taglist', function(req,res) {
 		var tags = new Tags(db);
-		tags.getTaglist(function (err, result) {
+		tags.getTagList(function (err, result) {
 			if (err) {
 				res.render('tags',{'error':err.message
 								  ,'user':req.user
@@ -122,6 +122,54 @@ module.exports = exports = function(app, db, passport) {
 			}
 		});
 	});
+
+	app.post('/serieslist', function(req,res) {
+		var gallery = new Gallery(db);
+		var page = 1;
+		if (req.body.seriespage !== undefined) {
+			page = sanitize(req.body.seriespage);
+		}
+		gallery.getSeriesList(page,
+							  config.site.imagesPerPage,
+				              function (err, result, count) {
+			if (err) {
+				res.render('serieslist',{'error':err.message
+								  ,'user':req.user
+								  ,'config':config.site});
+				return;
+			} else {
+				res.render('serieslist',{'serieslist':result
+								  ,'user':req.user
+								  ,'config':config.site
+								  ,'count':count
+								  ,'page':page});
+			}
+		});
+	});
+	app.get('/serieslist', function(req,res) {
+		var gallery = new Gallery(db);
+		var page = 1;
+		if (req.query.seriespage !== undefined) {
+			page = sanitize(req.query.seriespage);
+		}
+		gallery.getSeriesList(page,
+							  config.site.imagesPerPage,
+	              			  function (err, result, count) {
+			if (err) {
+				res.render('serieslist',{'error':err.message
+								  ,'user':req.user
+								  ,'config':config.site});
+				return;
+			} else {
+				res.render('serieslist',{'serieslist':result
+								  ,'user':req.user
+								  ,'config':config.site
+								  ,'count':count
+								  ,'page':page});
+			}
+		});
+	});
+
 	
 	app.post('/addComment',function(req,res) {
 		var comments = new Comments(db);

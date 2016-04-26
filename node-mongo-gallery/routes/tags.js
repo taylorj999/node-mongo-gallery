@@ -15,7 +15,7 @@ function Tags(db) {
 	this.images = db.collection("images");
 }
 
-Tags.prototype.getTaglist = function getTaglist(callback) {
+Tags.prototype.getTagList = function getTagList(callback) {
 	this.images.aggregate([{'$project':{'tags':1}}
 						   ,{'$unwind':'$tags'}
 						   ,{'$group':{'_id':'$tags','count':{'$sum':1}}}

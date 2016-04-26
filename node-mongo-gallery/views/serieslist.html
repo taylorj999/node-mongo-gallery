@@ -1,6 +1,6 @@
 {% extends 'gallerytemplate.html' %}
 
-{% block title %}Gallery{% endblock %}
+{% block title %}Series List{% endblock %}
 
 {% block header %}
 <script type="text/javascript" src="/js/jquery.simplePagination.js"></script>
@@ -11,10 +11,10 @@ $( document ).ready(function() {
         items: {{count}},
         itemsOnPage: {{config.imagesPerPage}},
         cssStyle: 'light-theme',
-        currentPage: $('input[name="page"]').val(),
+        currentPage: {{page}},
         onPageClick: function (pageNum) {
-        	$('input[name="page"]').val(pageNum);
-        	document.forms.search.submit();
+        	$('input[name="seriespage"]').val(pageNum);
+        	document.forms.serieslist.submit();
         }
     });
 });
@@ -30,13 +30,18 @@ $( document ).ready(function() {
 {% endblock %}
 
 {% block main %}
+	<form name="serieslist" action="/serieslist" method="POST">
+		<input type="hidden" name="seriespage" value="{{page}}"/>
+	</form>
 	<div id="alert">{{error}}</div>
 	<div class="gallery">
-	{% for image in images %}
-		<div class="galleryimg">
-			<a href="/image?id={{image._id.toString()}}">
-			<img src="/thumbnails/{{image.thumbnail}}"/>
+	{% for series in serieslist %}
+		<div class="seriesimg">
+			<a href="/image?id={{series.imageid.toString()}}">
+			<img src="/thumbnails/{{series.thumbnail}}"/>
 			</a>
+			<div class="seriesname">{{series._id}}</div>
+			<div class="seriescount">Image Count: {{series.count}}</div>
 		</div>
 	{% endfor %}
 		<div class="pagination" id="pagination"/>

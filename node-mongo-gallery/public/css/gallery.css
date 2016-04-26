@@ -88,6 +88,21 @@ div#galleryimg a:hover img {
     border:1px solid #0000ff;
 }
 
+div.seriesimg {
+    margin: 5px;
+    padding: 5px;
+    height: 200px;
+    width: 150px;
+    float: left;
+    text-align: center;
+}
+
+div#seriesimg img {
+    display: inline;
+    margin: 5px;
+    border: 1px solid #ffffff;
+}
+
 div#pagination {
 	float: right;
 	text-align: center;

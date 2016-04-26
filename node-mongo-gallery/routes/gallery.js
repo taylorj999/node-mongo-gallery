@@ -206,6 +206,29 @@ Gallery.prototype.getImage = function getImage(image_id, callback) {
 	                    ,callback);
 };
 
+Gallery.prototype.getSeriesList = function getSeriesList(page, limit, callback) {
+	this.images.aggregate([{'$match':{'deleted':{'$ne':true},'tags':'series','series.name':{'$exists':true}}},
+	                       {'$sort':{'series.sequence':1}},
+	                       {'$group':{'_id':'$series.name'
+	                                 ,'count':{'$sum':1}
+	                                 ,'thumbnail':{'$first':'$thumbnail'}
+	                                 ,'imageid':{'$first':'$_id'}}},
+	                       {'$sort':{'_id':1}}],function(err,result) {
+							if (err) {
+								return callback(err);
+							} else {
+								var sLength = result.length;
+								if (sLength > (page * limit)) {
+									result.length = page * limit;
+								}
+								if (page > 1) {
+									result = result.splice((page-1)*limit,(page*limit)-1);
+								}
+								return callback(null,result,sLength);
+							}
+						 });
+};
+
 Gallery.prototype.getSeriesImage = function getSeriesImage(series, sequence, callback) {
 	sequence = sequence * 1;
 	this.images.findAndModify({'series.name':series,'series.sequence':sequence}
