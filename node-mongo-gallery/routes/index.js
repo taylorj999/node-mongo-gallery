@@ -1,6 +1,7 @@
 var Gallery = require('./gallery').Gallery
    ,Comments = require('./comments').Comments
    ,Tags = require('./tags').Tags
+   ,Download = require('./download').Download
    ,config = require('../config/config')
    ,validator = require('validator')
    ,sanitizers = require('../config/sanitizers');
@@ -292,6 +293,19 @@ module.exports = exports = function(app, db, passport) {
 		}
 	});
 
+	app.post('/markDownload', function(req,res) {
+		if (req.body.url === undefined) {
+			return res.send({'msg':'Invalid url'});
+		} else {
+			download.queueDownload(req.body, function(err,result) {
+				if (err) {
+					return res.send({'msg':err});
+				} else {
+					return res.send({'msg':''});
+				}
+			});
+		}
+	});
 };
 
 function getGallery(query_params,req,res,db) {
