@@ -4,11 +4,11 @@ var ObjectId = require('mongodb').ObjectID
 function Download(db) {
 	"use strict";
 	
-	this.download = db.collection("download");
+	this.dlqueue = db.collection("dlqueue");
 }
 
 Download.prototype.queueDownload = function queueDownload(data,callback) {
-	this.download.insert(data, function(err,result) {
+	this.dlqueue.insert(data, function(err,result) {
 		callback(err,result);
 	});
 };

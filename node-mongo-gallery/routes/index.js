@@ -293,7 +293,12 @@ module.exports = exports = function(app, db, passport) {
 		}
 	});
 
-	app.post('/markDownload', function(req,res) {
+	// Access-Control-Allow-Origin setting has no purpose other than to make the
+	// browser complain if it is not set to "*", therefore it is set to "*". The
+	// field has no security use whatsoever.
+	app.post('/queueDownload', function(req,res) {
+		res.header("Access-Control-Allow-Origin", "*");
+		var download = new Download(db);
 		if (req.body.url === undefined) {
 			return res.send({'msg':'Invalid url'});
 		} else {

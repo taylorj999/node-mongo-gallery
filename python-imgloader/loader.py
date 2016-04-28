@@ -20,6 +20,7 @@ done_dir = dirs['directories']['done_dir']
 # any default tags specified
 parser = argparse.ArgumentParser()
 parser.add_argument('--dt',action='append')
+parser.add_argument('--series',action='store')
 args = parser.parse_args()
 if args.dt != None:
 	tags = args.dt
@@ -69,6 +70,9 @@ for fName in onlyfiles:
 			   "x" : s1,
 			   "y" : s2,
 			   "tags" : tags}
+     if args.series != None:
+     	imgdoc['series'] = {
+     		"name" : args.series}
      coll.insert(imgdoc)
      # and finally move the old file to the new location and name
      del im

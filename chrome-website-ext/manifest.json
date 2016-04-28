@@ -1,0 +1,17 @@
+{
+  "manifest_version": 2,
+
+  "name": "node-mongo-gallery Chrome download tagger",
+  "description": "This extension adds a button to images to tag them for downloading and addition to the gallery",
+  "version": "0.1",
+
+  "web_accessible_resources": ["nmgDownloadTag.css","nmgQueueScript.js"],
+  
+  "content_scripts": [
+	{
+      "matches": ["http://*.deviantart.com/*"],
+      "js": ["jquery-1.11.3.min.js","nmgDownloadTag.js"],
+      "css": ["nmgDownloadTag.css"]
+    }],
+  "permissions": ["http://*.deviantart.com/*", "tabs"]
+}
