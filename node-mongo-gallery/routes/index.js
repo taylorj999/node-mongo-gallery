@@ -1,4 +1,6 @@
 var Gallery = require('./gallery').Gallery
+   ,Comments = require('./comments').Comments
+   ,Tags = require('./tags').Tags
    ,config = require('../config/config')
    ,validator = require('validator')
    ,sanitizers = require('../config/sanitizers');
@@ -68,15 +70,123 @@ module.exports = exports = function(app, db, passport) {
 	
 	app.get('/image', function(req,res) {
 		var gallery = new Gallery(db);
-		gallery.getImage(sanitize(req.query.id).toLowerCase(), function(err,result) {
+		if ((req.query.id === undefined)&&(req.query.series === undefined)) {
+			res.render('image',{'error':'Invalid parameter error'});
+		} else if (req.query.id === undefined) {
+			gallery.getSeriesImage(sanitize(req.query.series).toLowerCase()
+					              ,sanitize(req.query.sequence)
+					              ,function(err,result) {
+									if (err) {
+										res.render('image',{'error':err.message
+											               ,'image':result
+											               ,'user':req.user
+											               ,'config':config.site});
+									    return;
+									} else {
+										res.render('image',{'image':result
+								                           ,'user':req.user
+								                           ,'config':config.site});
+										return;
+									}
+			});
+		} else {
+			gallery.getImage(sanitize(req.query.id).toLowerCase(), function(err,result) {
+				if (err) {
+					res.render('image',{'error':err.message
+								   	   ,'image':result
+								       ,'user':req.user
+								       ,'config':config.site});
+				    return;
+			    } else {
+				    res.render('image',{'image':result
+								       ,'user':req.user
+								       ,'config':config.site});
+				    return;
+			    }
+			});
+		}
+	});
+	
+	app.get('/taglist', function(req,res) {
+		var tags = new Tags(db);
+		tags.getTagList(function (err, result) {
+			if (err) {
+				res.render('tags',{'error':err.message
+								  ,'user':req.user
+								  ,'config':config.site});
+				return;
+			} else {
+				res.render('tags',{'taglist':result
+								  ,'user':req.user
+								  ,'config':config.site});
+			}
+		});
+	});
+
+	app.post('/serieslist', function(req,res) {
+		var gallery = new Gallery(db);
+		var page = 1;
+		if (req.body.seriespage !== undefined) {
+			page = sanitize(req.body.seriespage);
+		}
+		gallery.getSeriesList(page,
+							  config.site.imagesPerPage,
+				              function (err, result, count) {
+			if (err) {
+				res.render('serieslist',{'error':err.message
+								  ,'user':req.user
+								  ,'config':config.site});
+				return;
+			} else {
+				res.render('serieslist',{'serieslist':result
+								  ,'user':req.user
+								  ,'config':config.site
+								  ,'count':count
+								  ,'page':page});
+			}
+		});
+	});
+	app.get('/serieslist', function(req,res) {
+		var gallery = new Gallery(db);
+		var page = 1;
+		if (req.query.seriespage !== undefined) {
+			page = sanitize(req.query.seriespage);
+		}
+		gallery.getSeriesList(page,
+							  config.site.imagesPerPage,
+	              			  function (err, result, count) {
+			if (err) {
+				res.render('serieslist',{'error':err.message
+								  ,'user':req.user
+								  ,'config':config.site});
+				return;
+			} else {
+				res.render('serieslist',{'serieslist':result
+								  ,'user':req.user
+								  ,'config':config.site
+								  ,'count':count
+								  ,'page':page});
+			}
+		});
+	});
+
+	
+	app.post('/addComment',function(req,res) {
+		var comments = new Comments(db);
+		comments.addComment(req.user
+				           ,sanitize(req.body.comment,sanitizers.comments)
+				           ,sanitize(req.body.id).toLowerCase()
+				           ,function(err,result) {
 			if (err) {
 				res.render('image',{'error':err.message
-								   ,'image':{}
-								   ,'user':req.user});
+								   ,'image':result
+								   ,'user':req.user
+								   ,'config':config.site});
 				return;
 			} else {
 				res.render('image',{'image':result
-								   ,'user':req.user});
+								   ,'user':req.user
+								   ,'config':config.site});
 				return;
 			}
 		});
@@ -85,6 +195,9 @@ module.exports = exports = function(app, db, passport) {
 	app.get('/addtag-api', function(req,res) {
 		if ((req.query.id === undefined)||(req.query.newtag === undefined)) {
 			res.jsonp({'status':'error','error':'Invalid parameter error.'});
+			return;
+		} else if (config.system.reservedTags.indexOf(sanitize(req.query.newtag).toLowerCase()) >= 0) {
+			res.jsonp({'status':'error','error':'Reserved keyword.'});
 			return;
 		} else {
 			var gallery = new Gallery(db);
@@ -95,13 +208,34 @@ module.exports = exports = function(app, db, passport) {
 					res.jsonp({'status':'error','error':err.message});
 					return;
 				} else {
-					res.jsonp({'status':'success','tag':sanitize(req.query.newtag)});
+					res.jsonp({'status':'success','tag':sanitize(req.query.newtag).toLowerCase()});
 					return;
 				} 
 			});
 		}
 	});
 
+	app.get('/setsequence-api', function(req,res) {
+		if ((req.query.id === undefined)||(req.query.sequence === undefined)||isNaN(req.query.sequence)) {
+			res.jsonp({'status':'error','error':'Invalid parameter error.'});
+			return;
+		} else {
+			var gallery = new Gallery(db);
+			gallery.setSequence(sanitize(req.query.id).toLowerCase()
+					           ,sanitize(req.query.sequence)
+					           ,sanitize(req.query.series_name)
+					           ,function(err) {
+				if (err) {
+					res.jsonp({'status':'error','error':err.message});
+					return;
+				} else {
+					res.jsonp({'status':'success'});
+					return;
+				} 
+			});
+		}
+	});
+	
 	app.get('/removetag-api', function(req,res) {
 		if ((req.query.id === undefined)||(req.query.tag === undefined)) {
 			res.jsonp({'status':'error','error':'Invalid parameter error.'});
@@ -171,7 +305,7 @@ function getGallery(query_params,req,res,db) {
 	}
 	gallery.covertTagsToParams(tags, function(params) {
 		gallery.buildQueryOptions(query_params.page, query_params.sortby, function(options) {
-			gallery.getImages(params, options, function(err, data, count) {
+			gallery.getImages(params, options, function(err, data, count, taglist) {
 				if (err) {
 					res.render('gallery',{'error':err.message 
 									 	,'images':{}
@@ -184,7 +318,8 @@ function getGallery(query_params,req,res,db) {
 									 	,'count':count
 									 	,'page':query_params.page
 									 	,'config':config.site
-									 	,'sortby':query_params.sortby});
+									 	,'sortby':query_params.sortby
+									 	,'taglist':taglist});
 					return;
 				}
 			});

@@ -1,21 +1,60 @@
 {% extends 'gallerytemplate.html' %}
 
+{% block header %}
+<script type="text/javascript" src="/js/imagesloaded.pkgd.min.js"></script>
+<script language="JavaScript">
+	function fitMainImageToScreen() {
+		var containerWidth = $("div#image").width();
+		var containedWidth = $("img#mainimage").width();
+		if (containedWidth > containerWidth) {
+			var containedHeight = $("img#mainimage").height();
+			var newHeight = ( containedHeight * containerWidth) / containedWidth; 
+			$("img#mainimage").height(newHeight);
+			$("img#mainimage").width(containerWidth);
+		}
+	}
+	$(document).ready(function() {
+		$("img#mainimage").imagesLoaded().done(function(instance) { fitMainImageToScreen(); });
+	});
+</script>
+{% endblock %}
+
 {% block title %}Image{% endblock %}
 
 {% block leftcolumn %}
   {% if image %}
     <div class="taglist">
-		{% for tag in image.tags %}
-		<div class="tag" id="{{tag}}">{{tag}} {% if user %}<img src="/images/delete-sm.png" class="delete-button" onClick="javascript:deleteTag('{{image._id.toString()}}','{{tag}}');"/>{% endif %}</div>
+    	<span style="font-size: 12px">Image Tags</span>
+		{% for tag in image.tags.sort() %}
+		<div class="tag" id="{{tag}}"><a href="/gallery?tags={{tag}}&page=1">{{tag}}</a> {% if user %}<img src="/images/delete-sm.png" class="delete-button" onClick="javascript:deleteTag('{{image._id.toString()}}','{{tag}}');"/>{% endif %}</div>
 		{% endfor %}
 	</div>
 	{% if user %}
+		<span style="font-size: 12px">Add Tag</span>
 		<div class="tag">
 			<form name="addtag" method="post" action="" onsubmit="addTag('{{image._id.toString()}}');return false;">
 				<input type="text" name="newtag" value=""/>
 				<input type="button" name="add" class="add-button" onClick="javascript:addTag('{{image._id.toString()}}');"/>
 			</form>
 		</div>
+	{% endif %}
+	{% if image.tags.indexOf('series') >=0 %}
+		<span style="font-size: 12px">Series Info</span>
+		<div class="series">
+		{% if user %}
+			<form name="setsequence" method="post" action="" onsubmit="setSequence('{{image._id.toString()}}');return false;">
+				<input type="text" name="series_name" value="{{image.series.name}}"/>
+				<input type="text" name="sequence" value="{{image.series.sequence}}"/>
+				<input type="button" name="set" value="set" class="set-button" onClick="javascript:setSequence('{{image._id.toString()}}');"/>
+			</form>
+	 	{% else %}
+	 		<span style="font-size: 12px">Series: {{image.series.name}}</span>
+	 	 	<span style="font-size: 12px">Sequence: {{image.series.sequence}}</span>
+	 	{% endif %}
+			<span style="font-size: 12px">Images in series: {{image.series.count}}</span>
+		</div>
+	{% endif %}
+	{% if user %}
 		{% if image.deleted %}
 		<div class="delete">
 			<input type="button" name="undelete" value="Un-Delete Image" class="delete-image" onClick="javascript:unDeleteImage('{{image._id.toString()}}');"/>
@@ -28,7 +67,7 @@
 	{% endif %}
 	<div class="imagedetail">
 		<div id="original">Original: {{image.original}}</div>
-		<div id="uploaded">Uploaded on: {{image.date.toString()}}</div>
+		<div id="uploaded">Uploaded on: {{image.date|date('Y-m-d')}}</div>
 	</div>
   {% endif %}
 {% endblock %}
@@ -36,8 +75,51 @@
 {% block main %}
 	<div id="alert">{{error}}</div>
 	{% if image %}
+		{% if image.series.count >= 1 %}
+		<div id="seriesnav">
+			{% if image.series.sequence > 1 %}
+				<a href="image?series={{image.series.name}}&sequence={{image.series.sequence - 1}}">&lt;&lt;&lt; Prev</a> 
+			{% endif %}
+			{{image.series.sequence}} of {{image.series.count}}
+			{% if image.series.sequence < image.series.count %}
+				<a href="image?series={{image.series.name}}&sequence={{image.series.sequence + 1}}">Next &gt;&gt;&gt;</a>
+			{% endif %}
+		</div>
+		{% endif %}
 	<div id="image">
-		<img src="/{{image.location}}"/>
+		<img id="mainimage" src="/{{image.location}}"/>
 	</div>
+		{% if image.series.count >= 1 %}
+		<div id="seriesnav">
+			{% if image.series.sequence > 1 %}
+				<a href="image?series={{image.series.name}}&sequence={{image.series.sequence - 1}}">&lt;&lt;&lt; Prev</a> 
+			{% endif %}
+			{{image.series.sequence}} of {{image.series.count}}
+			{% if image.series.sequence < image.series.count %}
+				<a href="image?series={{image.series.name}}&sequence={{image.series.sequence + 1}}">Next &gt;&gt;&gt;</a>
+			{% endif %}
+		</div>
+		{% endif %}
+		{% if config.allowComments %}
+			<div id="comments">
+				{% for comment in image.comments %}
+				<div id="comment">
+					<div id="commentuser">{{comment.user}}</div>
+					<div id="commentdate">Posted: {{comment.date|date('Y-m-d')}}</div>
+					<div id="commenttext">{{comment.comment}}</div>
+				</div>
+				{% endfor %}
+				{% if user || config.allowAnonymousComments %}
+				<div id="comment">
+					<form name="comment" action="/addComment" method="POST">
+						<div id="commentuser">{% if user %}{{user.local.email}}{% else %}Anonymous{% endif %}</div>
+						<div id="commenttext"><textarea cols="50" rows="6" name="comment"></textarea></div>
+						<input type="submit" name="Add Comment" value="Add Comment"/>
+						<input type="hidden" name="id" value="{{image._id.toString()}}"/>
+					</form>
+				</div>
+				{% endif %}
+			</div>
+		{% endif %}
 	{% endif %}
 {% endblock %}
