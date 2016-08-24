@@ -37,7 +37,7 @@ $( document ).ready(function() {
 	<div class="gallery">
 	{% for series in serieslist %}
 		<div class="seriesimg">
-			<a href="/image?id={{series.imageid.toString()}}">
+			<a href="/gallery?series={{series._id}}">
 			<img src="/thumbnails/{{series.thumbnail}}"/>
 			</a>
 			<div class="seriesname">{{series._id}}</div>

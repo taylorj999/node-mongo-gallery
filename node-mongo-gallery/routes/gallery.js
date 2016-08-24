@@ -59,6 +59,7 @@ Gallery.prototype.covertTagsToParams = function convertParamsToQuery(tags, callb
 		} else if ((tagarray_positive.length > 0) && (tagarray_negative.length > 0)) {
 			params["$and"] = [{"tags" : {"$all": tagarray_positive}}, {"tags":{"$not" : {"$in" : tagarray_negative}}}];
 		}
+		
 		return callback(params);
 	}
 };
@@ -112,8 +113,10 @@ Gallery.prototype.getImages = function getImages(params, options, callback) {
 				} else {
 					var taglist = {};
 					for (x=0;x<results.length;x++) {
-						for(y=0;y<results[x].tags.length;y++) {
-							taglist[results[x].tags[y]]=1;
+						if (results[x].tags !== undefined) {
+							for(y=0;y<results[x].tags.length;y++) {
+								taglist[results[x].tags[y]]=1;
+							}
 						}
 					}
 					callback(err,results,count,Object.keys(taglist));
