@@ -12,3 +12,4 @@ A simple node gallery application designed to sit atop a MongoDB back end. At th
 ##Uses
 * [simplePagination.js](https://github.com/flaviusmatis/simplePagination.js)
 * [jquery 1.11.1](http://jquery.com/)
+* [imagesloaded](https://github.com/desandro/imagesloaded)
