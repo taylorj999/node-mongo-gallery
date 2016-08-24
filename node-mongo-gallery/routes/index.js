@@ -52,6 +52,9 @@ module.exports = exports = function(app, db, passport) {
 		if (req.body.sortby !== undefined) {
 			params.sortby = sanitize(req.body.sortby).toLowerCase();
 		}
+		if (req.body.series !== undefined) {
+			params.series = sanitize(req.body.series);
+		}
 		getGallery(params,req,res,db);
 	});
 	app.get('/gallery', function(req,res) {
@@ -64,6 +67,9 @@ module.exports = exports = function(app, db, passport) {
 		}
 		if (req.query.sortby !== undefined) {
 			params.sortby = sanitize(req.query.sortby).toLowerCase();
+		}
+		if (req.query.series !== undefined) {
+			params.series = sanitize(req.query.series);
 		}
 		getGallery(params,req,res,db);
 	});
@@ -298,12 +304,20 @@ function getGallery(query_params,req,res,db) {
 	var gallery = new Gallery(db);
 	var tags = null;
 	if (query_params.tags !== undefined) {
-		tags = query_params.tags.split(" ");
+		if (query_params.tags.length > 0) {
+			tags = query_params.tags.split(" ");
+		}
 	}
 	if (query_params.page === undefined) {
 		query_params.page = 1;
 	}
 	gallery.covertTagsToParams(tags, function(params) {
+		if (query_params.series !== undefined) {
+			params["series.name"] = query_params.series;
+			if (query_params.sortby === undefined) {
+				query_params.sortby = "series";
+			}
+		}
 		gallery.buildQueryOptions(query_params.page, query_params.sortby, function(options) {
 			gallery.getImages(params, options, function(err, data, count, taglist) {
 				if (err) {
@@ -319,6 +333,7 @@ function getGallery(query_params,req,res,db) {
 									 	,'page':query_params.page
 									 	,'config':config.site
 									 	,'sortby':query_params.sortby
+									 	,'series':query_params.series
 									 	,'taglist':taglist});
 					return;
 				}

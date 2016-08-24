@@ -25,7 +25,7 @@
 			<a href="/login" class="navlink">Log In</a> or <a href="/signup" class="navlink">Create Account</a>
 		{% endif %}
 		&nbsp;||&nbsp;
-		<a href="/serieslies">Series</a>
+		<a href="/serieslist">Series</a>
 		<a href="/taglist">Tags</a>
 	</div>
 	<div id="centerpage">
@@ -35,6 +35,9 @@
 		<form name="search" method="GET" action="/gallery">
 			<input type="text" name="tags" value="{{tags}}"/>
 			<input type="hidden" name="page" value="{{page}}"/>
+			{% if series %}
+				<input type="text" name="series" value="{{series}}"/>
+			{% endif %}
 			<div style="font-size: 12px; text-align: center">Search Order</div>
 			<select name="sortby">
 				<option value="recent" {% if sortby == 'recent' %}SELECTED{% endif %}>Most recent</option>
