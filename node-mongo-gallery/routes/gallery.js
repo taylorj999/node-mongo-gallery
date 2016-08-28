@@ -16,18 +16,19 @@ function Gallery(db) {
 }
 
 Gallery.prototype.covertTagsToParams = function convertParamsToQuery(tags, callback) {
+	var params = {};
+	
+	// default to excluding all images that have been marked for deletion
+	// this will be overridden if the user has passed 'deleted' as a parameter
+	params["deleted"] = {'$ne':true};
+
 	if (tags===null) {
-		return callback({});
+		return callback(params);
 	} else {
-		var params = {};
 		var tagarray_positive = [];
 		var tagarray_negative = [];
 		var untag = false;
-		
-		// default to excluding all images that have been marked for deletion
-		// this will be overridden if the user has passed 'deleted' as a parameter
-		params["deleted"] = {'$ne':true};
-		
+				
 		tags.forEach(function(item) {
 			switch(item) {
 				case "new":
