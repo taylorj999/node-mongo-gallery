@@ -19,6 +19,94 @@ $( document ).ready(function() {
     });
 });
 </script>
+<script language="JavaScript">
+function showEdit() {
+	var editDivs = document.getElementsByClassName("galleryeditbox");
+	for (var i=0; i<editDivs.length; i++) {
+		editDivs[i].style.display = "block";
+	}
+	var tagDivs = document.getElementsByClassName("masstagbox");
+	for (var i=0; i<tagDivs.length; i++) {
+		tagDivs[i].style.display = "block";
+	}
+}
+function setSequenceGallery(id) {
+	var sequence = $("input[name="+id+"sequence]").val();
+	var series_name = $("input[name="+id+"series_name]").val();
+	setSequence(id,series_name,sequence);
+}
+function callMassTagAPI() {
+	var imageSelectBoxes = document.getElementsByClassName("massselectbox");
+	var ids = "";
+	var tagname = $("input[name=masstagname]").val();
+	for (var i=0; i<imageSelectBoxes.length; i++) {
+		if (imageSelectBoxes[i].checked) {
+			if (ids.length == 0) {
+				ids = imageSelectBoxes[i].value;
+			} else {
+				ids = ids + "," + imageSelectBoxes[i].value;
+			}
+		}
+	}
+	addTagMass(ids,tagname);
+}
+function callMassSeriesAPI() {
+	var imageSelectBoxes = document.getElementsByClassName("massselectbox");
+	var ids = "";
+	var seriesname = $("input[name=massseriesname]").val();
+	for (var i=0; i<imageSelectBoxes.length; i++) {
+		if (imageSelectBoxes[i].checked) {
+			if (ids.length == 0) {
+				ids = imageSelectBoxes[i].value;
+			} else {
+				ids = ids + "," + imageSelectBoxes[i].value;
+			}
+		}
+	}
+	addSeriesMass(ids,seriesname);
+}
+function callRemoveNewFlag() {
+	var imageSelectBoxes = document.getElementsByClassName("massselectbox");
+	var ids = "";
+	for (var i=0; i<imageSelectBoxes.length; i++) {
+		if (imageSelectBoxes[i].checked) {
+			if (ids.length == 0) {
+				ids = imageSelectBoxes[i].value;
+			} else {
+				ids = ids + "," + imageSelectBoxes[i].value;
+			}
+		}
+	}
+	removeNewFlag(ids);
+}
+function clearSelected() {
+	var imageSelectBoxes = document.getElementsByClassName("massselectbox");
+	for (var i=0; i<imageSelectBoxes.length; i++) {
+		imageSelectBoxes[i].checked = false;
+	}
+}
+function selectAll() {
+	var imageSelectBoxes = document.getElementsByClassName("massselectbox");
+	for (var i=0; i<imageSelectBoxes.length; i++) {
+		imageSelectBoxes[i].checked = true;
+	}
+}
+</script>
+<style>
+div.galleryeditbox {
+	display: none;
+	font-size: 0.875em;
+}
+div.masstagbox {
+	display: none;
+}
+input.massselectbox {
+	align: left;
+}
+div.selectordeselect {
+	display: none;
+}
+</style>
 {% endblock %}
 
 {% block leftcolumn %}
@@ -27,6 +115,24 @@ $( document ).ready(function() {
 		<div class="tag" id="{{tag}}"><a href="/gallery?tags={{tag}}&page=1">{{tag}}</a></div>
 	{% endfor %}
 	</div>
+	<div class="showedit">
+	    <a href="javascript:showEdit();">Show Edit Tools</a>
+	</div>
+	<div class="masstagbox">
+		<form name="masstag">
+			<div>Tag: <input type="text" name="masstagname" value=""/></div>
+			<div><a href="javascript:callMassTagAPI();">Tag selected images</a></div>
+		</form>
+		<form name="massseries">
+			<div>Series: <input type="text" name="massseriesname" value=""/></div>
+			<div><a href="javascript:callMassSeriesAPI();">Add series to selected images</a></div>
+		</form>
+		<div><a href="javascript:callRemoveNewFlag();">Mark images as not new</a></div>
+	</div>
+	<div class="masstagbox">
+		<div><a href="javascript:clearSelected();">Clear selection</a></div>
+		<div><a href="javascript:selectAll();">Select all</a></div>
+	</div>
 {% endblock %}
 
 {% block main %}
@@ -34,10 +140,23 @@ $( document ).ready(function() {
 	<div class="gallery">
 	{% for image in images %}
 		<div class="galleryimg">
+			<div class="masstagbox"><input type="checkbox" class="massselectbox" id="image{{image._id.toString()}}" value="{{image._id.toString()}}"/></div>
 			<a href="/image?id={{image._id.toString()}}">
 			<img src="/thumbnails/{{image.thumbnail}}"/>
 			</a>
+			{% if image.series %}
+			<div class="galleryeditbox">
+			   <form name="update{{image._id.toString()}}images">
+			      <div>Series: <input type="text" name="{{image._id.toString()}}series_name" value="{{image.series.name}}"/></div>
+			      <div>Position: <input type="text" name="{{image._id.toString()}}sequence" value="{{image.series.sequence}}"/></div>
+			      <div><a href="javascript:setSequenceGallery('{{image._id.toString()}}');">Update</a></div>
+			   </form>
+			</div>
+			{% endif %}
 		</div>
+		{% if (loop.index % 5) == 0 %}
+		<br/>
+		{% endif %}
 	{% endfor %}
 		<div class="pagination" id="pagination"/>
 	</div>
