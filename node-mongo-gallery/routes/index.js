@@ -84,12 +84,12 @@ module.exports = exports = function(app, db, passport) {
 					              ,function(err,result) {
 									if (err) {
 										res.render('image',{'error':err.message
-											               ,'image':result
+											               ,'image':{}
 											               ,'user':req.user
 											               ,'config':config.site});
 									    return;
 									} else {
-										res.render('image',{'image':result
+										res.render('image',{'image':result.value
 								                           ,'user':req.user
 								                           ,'config':config.site});
 										return;
@@ -99,12 +99,12 @@ module.exports = exports = function(app, db, passport) {
 			gallery.getImage(sanitize(req.query.id).toLowerCase(), function(err,result) {
 				if (err) {
 					res.render('image',{'error':err.message
-								   	   ,'image':result
+								   	   ,'image':{}
 								       ,'user':req.user
 								       ,'config':config.site});
 				    return;
 			    } else {
-				    res.render('image',{'image':result
+				    res.render('image',{'image':result.value
 								       ,'user':req.user
 								       ,'config':config.site});
 				    return;
@@ -185,12 +185,12 @@ module.exports = exports = function(app, db, passport) {
 				           ,function(err,result) {
 			if (err) {
 				res.render('image',{'error':err.message
-								   ,'image':result
+								   ,'image':{}
 								   ,'user':req.user
 								   ,'config':config.site});
 				return;
 			} else {
-				res.render('image',{'image':result
+				res.render('image',{'image':result.value
 								   ,'user':req.user
 								   ,'config':config.site});
 				return;
