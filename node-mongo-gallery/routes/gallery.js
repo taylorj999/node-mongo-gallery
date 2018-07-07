@@ -101,7 +101,8 @@ Gallery.prototype.buildQueryOptions = function buildQueryOptions(page,orderby,ca
 Gallery.prototype.getImages = function getImages(params, options, callback) {
 	var images = this.images;
 	var imgquery = images.find(params,{'thumbnail':true,'tags':true},options);
-	imgquery.count(function(err,count) {
+	imgquery.count(false,function(err,count) {
+		console.log(count);
 		if (err) {
 			return callback(err);
 		} else if (count===0) {
