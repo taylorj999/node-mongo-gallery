@@ -16,10 +16,9 @@ Comments.prototype.addComment = function addComment(user, comment, image_id, cal
 	} else {
 		commentObj.user = user.local.email;
 	}
-	this.images.findAndModify({'_id':new ObjectId(image_id)}
-    						 ,[]
+	this.images.findOneAndUpdate({'_id':new ObjectId(image_id)}
     						 ,{'$addToSet':{'comments':commentObj}}
-    						 ,{'new':true}
+    						 ,{'returnOriginal':false}
     						 ,callback);
 };
 
