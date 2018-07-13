@@ -101,7 +101,7 @@ Gallery.prototype.buildQueryOptions = function buildQueryOptions(page,orderby,ca
 Gallery.prototype.getImages = function getImages(params, options, callback) {
 	var images = this.images;
 	var imgquery = images.find(params,{'thumbnail':true,'tags':true,'series':true},options);
-	imgquery.count(function(err,count) {
+	imgquery.count(false,function(err,count) {
 		if (err) {
 			return callback(err);
 		} else if (count===0) {
@@ -151,8 +151,7 @@ Gallery.prototype.updateSeriesCount = function updateSeriesCount(series_name, ca
 Gallery.prototype.setSequence = function setSequence(image_id, sequence, series_name, callback) {
 	sequence = sequence*1; // explicitly type to integer
 	var self=this;
-	this.images.findAndModify({'_id':new ObjectId(image_id)}
-						     ,{}
+	this.images.findOneAndUpdate({'_id':new ObjectId(image_id)}
 	                         ,{'$set':{'series.sequence':sequence,
 	                	               'series.name':series_name}}
 	                         ,{}
@@ -244,13 +243,11 @@ Gallery.prototype.removeTag = function removeTag(image_id, tag, callback) {
 };
 
 Gallery.prototype.getImage = function getImage(image_id, callback) {
-//	this.images.findOne({'_id':new ObjectId(image_id)},{},{},callback);
 	var images = this.images;
-	images.findAndModify({'_id':new ObjectId(image_id)}
-	                    ,[]
-	                    ,{'$set':{'last_viewed':new Date()}}
-	                    ,{'new':true}
-	                    ,callback);
+	images.findOneAndUpdate({'_id':new ObjectId(image_id)}
+						   ,{'$set':{'last_viewed':new Date()}}
+						   ,{'returnOriginal':false}
+						   ,callback);
 };
 
 Gallery.prototype.getSeriesList = function getSeriesList(page, limit, callback) {
@@ -278,11 +275,10 @@ Gallery.prototype.getSeriesList = function getSeriesList(page, limit, callback) 
 
 Gallery.prototype.getSeriesImage = function getSeriesImage(series, sequence, callback) {
 	sequence = sequence * 1;
-	this.images.findAndModify({'series.name':series,'series.sequence':sequence}
-							  ,[]
-							  ,{'$set':{'last_viewed':new Date()}}
-							  ,{'new':true}
-							  ,callback);
+	this.images.findOneAndUpdate({'series.name':series,'series.sequence':sequence}
+								,{'$set':{'last_viewed':new Date()}}
+								,{'returnOriginal':false}
+								,callback);
 };
 
 Gallery.prototype.markDeleted = function markDeleted(image_id, callback) {
