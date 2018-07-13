@@ -4,6 +4,8 @@ var sanitizers = {};
 sanitizers.standard = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890\\-_\\.';
 //allow_spaces is for the search parameter field, since search tags are space separated
 sanitizers.allow_spaces = ' ' + sanitizers.standard;
+//allow_commas is for comma-delimited lists
+sanitizers.allow_commas = ',' + sanitizers.standard;
 //be a bit more generous in comment fields
 sanitizers.comments = ', ;&' + sanitizers.standard;
 

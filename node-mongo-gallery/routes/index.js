@@ -298,6 +298,67 @@ module.exports = exports = function(app, db, passport) {
 		}
 	});
 
+	app.get('/tagmass-api', function(req,res) {
+		if (req.query.ids === undefined) {
+			res.jsonp({'status':'error','error':'Invalid parameter error.'});
+			return;
+		} else if (config.system.reservedTags.indexOf(sanitize(req.query.newtag).toLowerCase()) >= 0) {
+			res.jsonp({'status':'error','error':'Reserved keyword in tag.'});
+			return;
+		} else {
+			var gallery = new Gallery(db);
+			gallery.massAddTag(sanitize(req.query.ids,sanitizers.allow_commas).toLowerCase(),
+							   sanitize(req.query.newtag).toLowerCase(),
+							   function(err) {
+				if (err) {
+					res.jsonp({'status':'error','error':err.message});
+					return;
+				} else {
+					res.jsonp({'status':'success'});
+					return;
+				}
+			});
+		}
+	});
+	
+	app.get('/seriesmass-api', function(req,res) {
+		if (req.query.ids === undefined) {
+			res.jsonp({'status':'error','error':'Invalid parameter error.'});
+			return;
+		} else {
+			var gallery = new Gallery(db);
+			gallery.massAddSeries(sanitize(req.query.ids,sanitizers.allow_commas).toLowerCase(),
+							      sanitize(req.query.seriesname).toLowerCase(),
+							      function(err) {
+				if (err) {
+					res.jsonp({'status':'error','error':err.message});
+					return;
+				} else {
+					res.jsonp({'status':'success'});
+					return;
+				}
+			});
+		}
+	});
+	
+	app.get('/removenewflag-api',function(req,res) {
+		if (req.query.ids === undefined) {
+			res.jsonp({'status':'error','error':'Invalid parameter error.'});
+			return;
+		} else {
+			var gallery = new Gallery(db);
+			gallery.removeNewFlag(sanitize(req.query.ids,sanitizers.allow_commas).toLowerCase(),
+							      function(err) {
+				if (err) {
+					res.jsonp({'status':'error','error':err.message});
+					return;
+				} else {
+					res.jsonp({'status':'success'});
+					return;
+				}
+			});
+		}
+	});
 };
 
 function getGallery(query_params,req,res,db) {
