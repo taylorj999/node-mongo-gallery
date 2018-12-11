@@ -1,3 +1,4 @@
+#!python3
 import os
 from os.path import isfile, join
 import pymongo
