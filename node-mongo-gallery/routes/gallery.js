@@ -68,6 +68,7 @@ Gallery.prototype.buildQueryOptions = function buildQueryOptions(page,orderby,ca
 	var options = {};
 
 	options["limit"] = config.site.imagesPerPage;
+	options["skip"] = 0;
 	
 	if (page !== undefined) {
 		if (!isNaN(page)) {
@@ -79,18 +80,18 @@ Gallery.prototype.buildQueryOptions = function buildQueryOptions(page,orderby,ca
 
 	// order by stuff here
 	if (orderby === undefined) {
-		options["sort"] = [['date','desc']];
+		options["sort"] = {'date':-1};
 	} else {
 		switch (orderby) {
 			case "last":
-				options["sort"] = [['last_viewed','asc']];
+				options["sort"] = {'last_viewed':1};
 				break;
 			case "series":
-				options["sort"] = [['series.sequence','asc']];
+				options["sort"] = {'series.sequence':1};
 				break;
 			case "recent":
 			default:
-				options["sort"] = [['date','desc']];
+				options["sort"] = {'date':-1};
 				break;
 		}
 	}
@@ -100,13 +101,14 @@ Gallery.prototype.buildQueryOptions = function buildQueryOptions(page,orderby,ca
 
 Gallery.prototype.getImages = function getImages(params, options, callback) {
 	var images = this.images;
-	var imgquery = images.find(params,{'thumbnail':true,'tags':true,'series':true},options);
+	var imgquery = images.find(params,{'thumbnail':true,'tags':true,'series':true});
 	imgquery.count(false,function(err,count) {
 		if (err) {
 			return callback(err);
 		} else if (count===0) {
 			return callback(null,null,0);
 		} else {
+			imgquery.sort(options["sort"]).skip(options["skip"]).limit(options["limit"]);
 			imgquery.toArray(function(err,results) {
 				if (err) {
 					return callback(err);
@@ -132,8 +134,8 @@ Gallery.prototype.updateSeriesCount = function updateSeriesCount(series_name, ca
 		return callback(null);
 	} else {
 	  self.images.aggregate([{'$match':{'series.name':series_name,'deleted':{'$ne':true}}},
-	                         {'$group':{'_id':'series.name','count':{'$sum':1}}}]
-	                       ,function(err,result) {
+	                         {'$group':{'_id':'series.name','count':{'$sum':1}}}])
+	                       .toArray(function(err,result) {
 	        	   if (err) {
 	        		   return callback(err);
 	        	   } else if (result[0].count===0) {

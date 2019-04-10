@@ -15,10 +15,12 @@ var express = require('express')
   , flash 	 = require('connect-flash')
   , config = require('./config/config');
 
-MongoClient.connect(config.system.mongoConnectString, function(err, db) {
+MongoClient.connect(config.system.mongoConnectString, function(err, client) {
     "use strict";
     if(err) throw err;
 
+    var db = client.db();
+    
     // load passport configuration
     require('./config/passport')(passport,db);
 
@@ -29,7 +31,7 @@ MongoClient.connect(config.system.mongoConnectString, function(err, db) {
     app.engine('html', consolidate.swig);
     app.set('view engine', 'html');
     app.set('views', __dirname + '/views');
-    
+        
     // Express middleware to populate 'req.cookies' so we can access cookies
     app.use(express.cookieParser());
 
@@ -48,7 +50,9 @@ MongoClient.connect(config.system.mongoConnectString, function(err, db) {
 //    app.get('/', routes.index);
     
     app.set('port', process.env.PORT || config.system.galleryServerPort);
-    app.listen(app.get('port'), function() {
+    app.listen(app.get('port'), function(err) {
+    	if (err) return console.log('something bad happened', err);
     	console.log('Express server listening on port ' + app.get('port'));
     });
+
 });
