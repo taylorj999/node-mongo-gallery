@@ -194,8 +194,8 @@ Gallery.prototype.massAddSeries = function massAddSeries(image_ids, series_name,
 		return callback(null);
 	} else {
 	  self.images.aggregate([{'$match':{'series.name':series_name,'deleted':{'$ne':true},'_id':{'$not':{'$in':obj_upd_ids}}}},
-	                         {'$group':{'_id':'series.name','count':{'$sum':1}}}]
-	                       ,function(err,result) {
+	                         {'$group':{'_id':'series.name','count':{'$sum':1}}}])
+	             .toArray(function(err,result) {
 		  if (err) {
    		     return callback(err);
    	      } else {
@@ -259,7 +259,7 @@ Gallery.prototype.getSeriesList = function getSeriesList(page, limit, callback) 
 	                                 ,'count':{'$sum':1}
 	                                 ,'thumbnail':{'$first':'$thumbnail'}
 	                                 ,'imageid':{'$first':'$_id'}}},
-	                       {'$sort':{'_id':1}}],function(err,result) {
+	                       {'$sort':{'_id':1}}]).toArray(function(err,result) {
 							if (err) {
 								return callback(err);
 							} else {
