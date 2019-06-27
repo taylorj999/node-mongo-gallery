@@ -19,8 +19,13 @@ Tags.prototype.getTagList = function getTagList(callback) {
 	this.images.aggregate([{'$project':{'tags':1}}
 						   ,{'$unwind':'$tags'}
 						   ,{'$group':{'_id':'$tags','count':{'$sum':1}}}
-						   ,{'$sort':{'_id':1}}]
-						   ,callback);
+						   ,{'$sort':{'_id':1}}]).toArray(function(err,result) {
+							   if (err) {
+								   return callback(err,null);
+							   } else {
+								   return callback(null,result);
+							   }
+						   });
 };
 
 module.exports.Tags = Tags;

@@ -1,3 +1,4 @@
+#!python3
 import os
 from os.path import isfile, join
 import pymongo
@@ -8,6 +9,7 @@ import datetime
 import shutil
 import argparse
 import json
+import sys
 
 # load directory locations
 jf = open("../node-mongo-gallery/config/directory.json")
@@ -21,11 +23,15 @@ done_dir = dirs['directories']['done_dir']
 parser = argparse.ArgumentParser()
 parser.add_argument('--dt',action='append')
 parser.add_argument('--series',action='store')
+parser.add_argument('--notags',action='store_true')
 args = parser.parse_args()
 if args.dt != None:
 	tags = args.dt
 else:
-	tags = []
+	if args.notags:
+		tags = []
+	else:
+		sys.exit("No tags were provided. To load images without tags, use the --notags flag.")
 
 client = MongoClient()
 db = client.gallery

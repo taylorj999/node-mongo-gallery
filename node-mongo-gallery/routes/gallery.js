@@ -68,6 +68,7 @@ Gallery.prototype.buildQueryOptions = function buildQueryOptions(page,orderby,ca
 	var options = {};
 
 	options["limit"] = config.site.imagesPerPage;
+	options["skip"] = 0;
 	
 	if (page !== undefined) {
 		if (!isNaN(page)) {
@@ -79,18 +80,18 @@ Gallery.prototype.buildQueryOptions = function buildQueryOptions(page,orderby,ca
 
 	// order by stuff here
 	if (orderby === undefined) {
-		options["sort"] = [['date','desc']];
+		options["sort"] = {'date':-1};
 	} else {
 		switch (orderby) {
 			case "last":
-				options["sort"] = [['last_viewed','asc']];
+				options["sort"] = {'last_viewed':1};
 				break;
 			case "series":
-				options["sort"] = [['series.sequence','asc']];
+				options["sort"] = {'series.sequence':1};
 				break;
 			case "recent":
 			default:
-				options["sort"] = [['date','desc']];
+				options["sort"] = {'date':-1};
 				break;
 		}
 	}
@@ -100,13 +101,14 @@ Gallery.prototype.buildQueryOptions = function buildQueryOptions(page,orderby,ca
 
 Gallery.prototype.getImages = function getImages(params, options, callback) {
 	var images = this.images;
-	var imgquery = images.find(params,{'thumbnail':true,'tags':true},options);
+	var imgquery = images.find(params,{'thumbnail':true,'tags':true,'series':true});
 	imgquery.count(false,function(err,count) {
 		if (err) {
 			return callback(err);
 		} else if (count===0) {
 			return callback(null,null,0);
 		} else {
+			imgquery.sort(options["sort"]).skip(options["skip"]).limit(options["limit"]);
 			imgquery.toArray(function(err,results) {
 				if (err) {
 					return callback(err);
@@ -132,8 +134,8 @@ Gallery.prototype.updateSeriesCount = function updateSeriesCount(series_name, ca
 		return callback(null);
 	} else {
 	  self.images.aggregate([{'$match':{'series.name':series_name,'deleted':{'$ne':true}}},
-	                         {'$group':{'_id':'series.name','count':{'$sum':1}}}]
-	                       ,function(err,result) {
+	                         {'$group':{'_id':'series.name','count':{'$sum':1}}}])
+	                       .toArray(function(err,result) {
 	        	   if (err) {
 	        		   return callback(err);
 	        	   } else if (result[0].count===0) {
@@ -184,11 +186,55 @@ Gallery.prototype.setSequence = function setSequence(image_id, sequence, series_
 	                         });
 };
 
+Gallery.prototype.massAddSeries = function massAddSeries(image_ids, series_name, callback) {
+	var self=this;
+	var upd_ids = image_ids.split(',');
+	var obj_upd_ids = upd_ids.map(function(id) { return ObjectId(id); });
+	if (series_name===undefined || series_name===null) {
+		return callback(null);
+	} else {
+	  self.images.aggregate([{'$match':{'series.name':series_name,'deleted':{'$ne':true},'_id':{'$not':{'$in':obj_upd_ids}}}},
+	                         {'$group':{'_id':'series.name','count':{'$sum':1}}}])
+	             .toArray(function(err,result) {
+		  if (err) {
+   		     return callback(err);
+   	      } else {
+   	    	  var series_count = 0;
+   	    	  if (result.length) { series_count = result[0].count; }
+   	    	  doNothing = function doNothing() {};
+   	    	  for (var id in upd_ids) {
+   	    		  series_count += 1;
+   	    		  self.setSequence(upd_ids[id],series_count,series_name,doNothing);
+   	    	  }
+   	    	  callback(null);
+   	      }
+	  }); 
+	}
+};
+
 Gallery.prototype.addTag = function addTag(image_id, tag, callback) {
 	this.images.update({'_id':new ObjectId(image_id)}
 	                  ,{'$addToSet':{'tags':tag},'$set':{'new':false}}
 	                  ,{}
 	                  ,callback);
+};
+
+Gallery.prototype.massAddTag = function massAddTag(image_ids, tag, callback) {
+	var tag_ids = image_ids.split(',');
+	tag_ids = tag_ids.map(function(id) { return ObjectId(id); });
+	this.images.update({'_id':{'$in':tag_ids}}
+					  ,{'$addToSet':{'tags':tag}}
+					  ,{'multi':true}
+					  ,callback);
+};
+
+Gallery.prototype.removeNewFlag = function removeNewFlag(image_ids, callback) {
+	var tag_ids = image_ids.split(',');
+	tag_ids = tag_ids.map(function(id) { return ObjectId(id); });
+	this.images.update({'_id':{'$in':tag_ids}}
+					  ,{'$set':{'new':false}}
+					  ,{'multi':true}
+					  ,callback);
 };
 
 Gallery.prototype.removeTag = function removeTag(image_id, tag, callback) {
@@ -213,7 +259,7 @@ Gallery.prototype.getSeriesList = function getSeriesList(page, limit, callback) 
 	                                 ,'count':{'$sum':1}
 	                                 ,'thumbnail':{'$first':'$thumbnail'}
 	                                 ,'imageid':{'$first':'$_id'}}},
-	                       {'$sort':{'_id':1}}],function(err,result) {
+	                       {'$sort':{'_id':1}}]).toArray(function(err,result) {
 							if (err) {
 								return callback(err);
 							} else {

@@ -16,6 +16,11 @@
 	$(document).ready(function() {
 		$("img#mainimage").imagesLoaded().done(function(instance) { fitMainImageToScreen(); });
 	});
+	function setSequenceImage(id) {
+		var sequence = $("input[name=sequence]").val();
+		var series_name = $("input[name=series_name]").val();
+		setSequence(id,series_name,sequence);
+	}
 </script>
 {% endblock %}
 
@@ -42,10 +47,10 @@
 		<span style="font-size: 12px">Series Info</span>
 		<div class="series">
 		{% if user %}
-			<form name="setsequence" method="post" action="" onsubmit="setSequence('{{image._id.toString()}}');return false;">
+			<form name="setsequence" method="post" action="" onsubmit="setSequenceImage('{{image._id.toString()}}');return false;">
 				<input type="text" name="series_name" value="{{image.series.name}}"/>
 				<input type="text" name="sequence" value="{{image.series.sequence}}"/>
-				<input type="button" name="set" value="set" class="set-button" onClick="javascript:setSequence('{{image._id.toString()}}');"/>
+				<input type="button" name="set" value="set" class="set-button" onClick="javascript:setSequenceImage('{{image._id.toString()}}');"/>
 			</form>
 	 	{% else %}
 	 		<span style="font-size: 12px">Series: {{image.series.name}}</span>

@@ -66,25 +66,29 @@ div#footer {
 }
 
 div.gallery {
-	width: 900px;
+	width: 100%;
+}
+
+div.gallery br {
+	clear: both;
 }
 
 div.galleryimg {
     margin: 5px;
     padding: 5px;
-    height: 150px;
-    width: 150px;
+    min-width: 150px;
+    min-height: 150px;
     float: left;
     text-align: center;
 }
 
-div#galleryimg img {
+div.galleryimg img {
     display: inline;
     margin: 5px;
     border: 1px solid #ffffff;
 }
 
-div#galleryimg a:hover img {
+div.galleryimg a:hover img {
     border:1px solid #0000ff;
 }
 
@@ -97,7 +101,7 @@ div.seriesimg {
     text-align: center;
 }
 
-div#seriesimg img {
+div.seriesimg img {
     display: inline;
     margin: 5px;
     border: 1px solid #ffffff;
