@@ -155,7 +155,8 @@ Gallery.prototype.setSequence = function setSequence(image_id, sequence, series_
 	var self=this;
 	this.images.findOneAndUpdate({'_id':new ObjectId(image_id)}
 	                         ,{'$set':{'series.sequence':sequence,
-	                	               'series.name':series_name}}
+	                	               'series.name':series_name},
+	                	       '$addToSet':{'tags':'series'}}
 	                         ,{}
 	                         ,function(err,object) {
 	                        	 if (err) {
