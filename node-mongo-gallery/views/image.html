@@ -56,7 +56,8 @@
 	 		<span style="font-size: 12px">Series: {{image.series.name}}</span>
 	 	 	<span style="font-size: 12px">Sequence: {{image.series.sequence}}</span>
 	 	{% endif %}
-			<span style="font-size: 12px">Images in series: {{image.series.count}}</span>
+	 		<div style="font-size: 12px">Series: <a href="/gallery?series={{image.series.name}}">{{image.series.name}}</a></div>
+			<div style="font-size: 12px">Images in series: {{image.series.count}}</div>
 		</div>
 	{% endif %}
 	{% if user %}
