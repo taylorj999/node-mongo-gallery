@@ -100,32 +100,27 @@ Gallery.prototype.buildQueryOptions = function buildQueryOptions(page,orderby,ca
 };
 
 Gallery.prototype.getImages = function getImages(params, options, callback) {
-	var images = this.images;
-	var imgquery = images.find(params,{'thumbnail':true,'tags':true,'series':true});
-	imgquery.count(false,function(err,count) {
-		if (err) {
-			return callback(err);
-		} else if (count===0) {
-			return callback(null,null,0);
-		} else {
-			imgquery.sort(options["sort"]).skip(options["skip"]).limit(options["limit"]);
-			imgquery.toArray(function(err,results) {
-				if (err) {
-					return callback(err);
-				} else {
-					var taglist = {};
-					for (x=0;x<results.length;x++) {
-						if (results[x].tags !== undefined) {
-							for(y=0;y<results[x].tags.length;y++) {
-								taglist[results[x].tags[y]]=1;
-							}
-						}
-					}
-					callback(err,results,count,Object.keys(taglist));
-				}
-			});
-		}
-	});
+	var self = this;
+	// the aggregation pipeline generates 3 data facets: 'data' the actual search results after skip/limit
+	// 'taglist' the list of tags found in the search results after skip/limit
+	// 'count' the total number of search results (used for pagination)
+	self.images.aggregate([{'$match':params},
+	                       {'$project':{'thumbnail':1,'tags':1,'series':1,'date':1}},
+	                       {'$sort':options["sort"]},
+	                       {'$facet':
+	                         {
+	                    	   'data': [{'$match':{}},{'$skip':options["skip"]},{'$limit':options["limit"]}],
+	                    	   'taglist': [{'$skip':options["skip"]},{'$limit':options["limit"]},{'$unwind':'$tags'},{'$sortByCount':'$tags'} ],
+	                    	   'count': [{'$group':{'_id':null,'count':{'$sum':1}}}]
+	                    	 }
+	                       }])
+	                     .toArray(function(err,results) {
+	                    	 if (err) {
+	                    		 return callback(err);
+	                    	 } else {
+	                    		 callback(err,results[0].data,results[0].count[0].count,results[0].taglist);
+	                    	 }
+	                     });
 };
 
 Gallery.prototype.updateSeriesCount = function updateSeriesCount(series_name, callback) {
