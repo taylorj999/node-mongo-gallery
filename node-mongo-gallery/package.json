@@ -21,6 +21,7 @@
     "async": "^3.1.0",
     "bcrypt-nodejs": "latest",
     "body-parser": "~1.19.0",
+    "bootstrap": "^4.3.1",
     "connect-flash": "~0.1.1",
     "connect-mongodb-session": "~2.2.0",
     "consolidate": "~0.9.1",
