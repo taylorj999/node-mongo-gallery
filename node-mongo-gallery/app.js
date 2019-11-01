@@ -18,7 +18,7 @@ var express = require('express')
   , expressSession = require('express-session')
   , MongoDBStore = require('connect-mongodb-session')(expressSession);
 
-MongoClient.connect(config.system.mongoConnectString, function(err, client) {
+MongoClient.connect(config.system.mongoConnectString, { useUnifiedTopology: true }, function(err, client) {
     "use strict";
     if(err) throw err;
 
