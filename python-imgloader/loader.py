@@ -64,7 +64,11 @@ for fName in onlyfiles:
      	n1 = (150 * s1) / s2
      thumbsize = (n1,n2)
      thumbtype = im.format
-     im.thumbnail(thumbsize, Image.ANTIALIAS)
+     try:
+       im.thumbnail(thumbsize, Image.ANTIALIAS)
+     except:
+       print("Invalid image: " + fName)
+       continue
      im.save(join(thumbnail_dir,str_id[:8],thumbname),thumbtype)
      # save image document to database
      imgdoc = {"_id" : new_id,
