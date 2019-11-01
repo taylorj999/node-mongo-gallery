@@ -118,7 +118,11 @@ Gallery.prototype.getImages = function getImages(params, options, callback) {
 	                    	 if (err) {
 	                    		 return callback(err);
 	                    	 } else {
-	                    		 callback(err,results[0].data,results[0].count[0].count,results[0].taglist);
+	                    		 if (results[0].data.length > 0) {
+	                    			 callback(err,results[0].data,results[0].count[0].count,results[0].taglist);
+	                    		 } else {
+	                    			 callback(err,{},0,[]);
+	                    		 }
 	                    	 }
 	                     });
 };
@@ -209,35 +213,35 @@ Gallery.prototype.massAddSeries = function massAddSeries(image_ids, series_name,
 };
 
 Gallery.prototype.addTag = function addTag(image_id, tag, callback) {
-	this.images.update({'_id':new ObjectId(image_id)}
-	                  ,{'$addToSet':{'tags':tag},'$set':{'new':false}}
-	                  ,{}
-	                  ,callback);
+	this.images.updateOne({'_id':new ObjectId(image_id)}
+	                     ,{'$addToSet':{'tags':tag},'$set':{'new':false}}
+	                     ,{}
+	                     ,callback);
 };
 
 Gallery.prototype.massAddTag = function massAddTag(image_ids, tag, callback) {
 	var tag_ids = image_ids.split(',');
 	tag_ids = tag_ids.map(function(id) { return ObjectId(id); });
-	this.images.update({'_id':{'$in':tag_ids}}
-					  ,{'$addToSet':{'tags':tag}}
-					  ,{'multi':true}
-					  ,callback);
+	this.images.updateMany({'_id':{'$in':tag_ids}}
+					      ,{'$addToSet':{'tags':tag}}
+					      ,{'multi':true}
+					      ,callback);
 };
 
 Gallery.prototype.removeNewFlag = function removeNewFlag(image_ids, callback) {
 	var tag_ids = image_ids.split(',');
 	tag_ids = tag_ids.map(function(id) { return ObjectId(id); });
-	this.images.update({'_id':{'$in':tag_ids}}
-					  ,{'$set':{'new':false}}
-					  ,{'multi':true}
-					  ,callback);
+	this.images.updateMany({'_id':{'$in':tag_ids}}
+					      ,{'$set':{'new':false}}
+					      ,{'multi':true}
+					      ,callback);
 };
 
 Gallery.prototype.removeTag = function removeTag(image_id, tag, callback) {
-	this.images.update({'_id':new ObjectId(image_id)}
-    				   ,{'$pull':{'tags':tag},'$set':{'new':false}}
-    				   ,{}
-    				   ,callback);
+	this.images.updateOne({'_id':new ObjectId(image_id)}
+    				     ,{'$pull':{'tags':tag},'$set':{'new':false}}
+    				     ,{}
+    				     ,callback);
 };
 
 Gallery.prototype.getImage = function getImage(image_id, callback) {
@@ -280,17 +284,17 @@ Gallery.prototype.getSeriesImage = function getSeriesImage(series, sequence, cal
 };
 
 Gallery.prototype.markDeleted = function markDeleted(image_id, callback) {
-	this.images.update({'_id':new ObjectId(image_id)}
-    				  ,{'$set':{'deleted':true}}
-    				  ,{}
-    				  ,callback);
+	this.images.updateOne({'_id':new ObjectId(image_id)}
+    				     ,{'$set':{'deleted':true}}
+    				     ,{}
+    				     ,callback);
 };
 
 Gallery.prototype.markUnDeleted = function markUnDeleted(image_id, callback) {
-	this.images.update({'_id':new ObjectId(image_id)}
-					  ,{'$set':{'deleted':false}}
-    				  ,{}
-    				  ,callback);
+	this.images.updateOne({'_id':new ObjectId(image_id)}
+					     ,{'$set':{'deleted':false}}
+    				     ,{}
+    				     ,callback);
 };
 
 module.exports.Gallery = Gallery;
