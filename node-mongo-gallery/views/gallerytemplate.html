@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <title>{% block title %}Gallery{% endblock %}</title>
-  <link rel="stylesheet" href="/css/gallery.css"/>
+  <!-- <link rel="stylesheet" href="/css/gallery.css"/> -->
   <link rel="stylesheet" href="/css/bootstrap.min.css"/>
   <script type="text/javascript" src="/js/jquery.min.js"></script>
   <script type="text/javascript" src="/js/bootstrap.min.js"></script>
@@ -17,46 +17,55 @@
   {% endblock %}
 </head>
 <body>
-	<div id="top">HEADER IMAGE MIGHT GO HERE</div>
-	<div id="topnav">
+	<div id="topnav" class="nav navbar navbar-expand-lg navbar-dark bg-primary" role="navigation">
+      <div class="navbar-nav">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 		{% if user %}
-			Welcome, {{user.local.email}}.
-			<a href="/profile" class="navlink">My Profile</a>
-			<a href="/logout" class="navlink">Log Out</a>
+			<a href="#" class="navbar-brand">Welcome, {{user.local.email}}.</a>
+			<a href="/profile" class="nav-item nav-link">My Profile</a>
+			<a href="/logout" class="nav-item nav-link">Log Out</a>
 		{% else %}
-			<a href="/login" class="navlink">Log In</a> or <a href="/signup" class="navlink">Create Account</a>
+			<a href="/login" class="nav-item nav-link">Log In</a> <a href="/signup" class="nav-item nav-link">Create Account</a>
 		{% endif %}
-		&nbsp;||&nbsp;
-		<a href="/serieslist">Series</a>
-		<a href="/taglist">Tags</a>
+		<a href="/serieslist" class="nav-item nav-link">Series</a>
+		<a href="/taglist" class="nav-item nav-link">Tags</a>
+	  </div>
 	</div>
-	<div id="centerpage">
-		<div id="leftcolumn">
+	<div id="centerpage" class="container-fluid">
+	  <div class="row">
+		<div id="leftcolumn" class="col-2">
 		{% block searchbox %}
-		<div style="font-size: 12px; text-align: center">Image Search</div>
-		<form name="search" method="GET" action="/gallery">
-			<input type="text" name="tags" value="{{tags}}"/>
+		  <form name="search" method="GET" action="/gallery">
+		    <div class="form-group">
+		      <label for="formtags">Image Search</label>
+			  <input type="text" class="form-control" name="tags" id="formtags" value="{{tags}}"/>
+			</div>
 			<input type="hidden" name="page" value="{{page}}"/>
 			{% if series %}
-				<input type="text" name="series" value="{{series}}"/>
+				<input type="text" class="form-control" name="series" value="{{series}}"/>
 			{% endif %}
-			<div style="font-size: 12px; text-align: center">Search Order</div>
-			<select name="sortby">
+			<div class="form-group">
+			  <label for="sortby">Search Order</label>
+			  <select name="sortby" id="sortby" class="form-control">
 				<option value="recent" {% if sortby == 'recent' %}SELECTED{% endif %}>Most recent</option>
 				<option value="last" {% if sortby == 'last' %}SELECTED{% endif %}>Least viewed</option>
 				<option value="series" {% if sortby == 'series' %}SELECTED{% endif %}>Series sequence</option>
-			</select>
-		</form>
-		<input type="button" name="submit" value="Search" onClick="document.forms.search.submit();"/>
+			  </select>
+			</div>
+		  </form>
+		<input type="button" name="submit" value="Search" class="btn btn-primary" onClick="document.forms.search.submit();"/>
 		{% endblock %}
 		{% block leftcolumn %}
 		{% endblock %}
 		</div>
-		<div id="main">
+		<div id="main" class="col">
 		{% block main %}
 		CONTENT WELL
 		{% endblock %}
 		</div>
+	  </div>
 	</div>
 	<div id="footer">{% block footer %}Node-mongo-gallery source located at <a href="http://www.github.com/taylorj999/node-mongo-gallery">Github</a>{% endblock %}</div>
 </body>

@@ -4,7 +4,6 @@
 
 {% block header %}
 <script type="text/javascript" src="/js/jquery.simplePagination.js"></script>
-<link rel="stylesheet" href="/css/simplePagination.css"/>
 <script language="JavaScript">
 $( document ).ready(function() {
     $("#pagination").pagination({
@@ -110,28 +109,36 @@ div.selectordeselect {
 {% endblock %}
 
 {% block leftcolumn %}
-	<div class="taglist">
+	<div class="taglist border border-info rounded mt-5">
 	{% for tag in taglist %}
 		<div class="tag" id="{{tag._id}}"><a href="/gallery?tags={{tag._id}}&page=1">{{tag._id}}</a></div>
 	{% endfor %}
 	</div>
-	<div class="showedit">
-	    <a href="javascript:showEdit();">Show Edit Tools</a>
+	<div class="showedit mt-2">
+	    <button type="button" class="button btn-primary" onClick="showEdit();">Show Edit Tools</button>
 	</div>
-	<div class="masstagbox">
+	<div class="masstagbox border border-info rounded mt-2 p-1">
 		<form name="masstag">
-			<div>Tag: <input type="text" name="masstagname" value=""/></div>
-			<div><a href="javascript:callMassTagAPI();">Tag selected images</a></div>
+		  <div class="form-group">
+		    <label for="masstagname">Tag</label>
+			<input type="text" class="form-control" id="masstagname" name="masstagname" value=""/>
+		  </div>
+ 		  <button type="button" class="button btn-primary" onClick="callMassTagAPI();">Tag selected images</button>
 		</form>
 		<form name="massseries">
-			<div>Series: <input type="text" name="massseriesname" value=""/></div>
-			<div><a href="javascript:callMassSeriesAPI();">Add series to selected images</a></div>
+		  <div class="form-group">
+		    <label for="massseriesname">Series</label>
+			<input type="text" class="form-control" name="massseriesname" value=""/>
+		  </div>
+		  <button type="button" class="button btn-primary" onClick="callMassSeriesAPI();">Add series to selected images</button>
 		</form>
-		<div><a href="javascript:callRemoveNewFlag();">Mark images as not new</a></div>
+		<div class="mt-2">
+		  <button type="button" class="button btn-primary" onClick="callRemoveNewFlag();">Mark images as not new</button>
+		</div>
 	</div>
-	<div class="masstagbox">
-		<div><a href="javascript:clearSelected();">Clear selection</a></div>
-		<div><a href="javascript:selectAll();">Select all</a></div>
+	<div class="masstagbox border border-info rounded mt-2 p-1">
+		<button type="button" class="button btn-primary" onClick="clearSelected();">Clear selection</button>
+		<button type="button" class="button btn-primary" onClick="selectAll();">Select all</button>
 	</div>
 {% endblock %}
 
@@ -139,25 +146,40 @@ div.selectordeselect {
 	<div id="alert">{{error}}</div>
 	<div class="gallery">
 	{% for image in images %}
-		<div class="galleryimg">
-			<div class="masstagbox"><input type="checkbox" class="massselectbox" id="image{{image._id.toString()}}" value="{{image._id.toString()}}"/></div>
-			<a href="/image?id={{image._id.toString()}}">
-			<img src="/thumbnails/{{image.thumbnail}}"/>
-			</a>
-			{% if image.series %}
-			<div class="galleryeditbox">
-			   <form name="update{{image._id.toString()}}images">
-			      <div>Series: <input type="text" name="{{image._id.toString()}}series_name" value="{{image.series.name}}"/></div>
-			      <div>Position: <input type="text" name="{{image._id.toString()}}sequence" value="{{image.series.sequence}}"/></div>
-			      <div><a href="javascript:setSequenceGallery('{{image._id.toString()}}');">Update</a></div>
-			   </form>
-			</div>
-			{% endif %}
+	  {% if (loop.index % 6) == 1 %}
+	    <div class="row mb-1">
+	  {% endif %}
+	      <div class="col-2">
+	        <div class="card">
+	          <a href="/image?id={{image._id.toString()}}">
+	          <div class="masstagbox"><input type="checkbox" class="massselectbox" id="image{{image._id.toString()}}" value="{{image._id.toString()}}"/></div>
+		        <img src="/thumbnails/{{image.thumbnail}}" class="card-img-top"/>
+		      </a>
+		      {% if image.series %}
+			  <div class="galleryeditbox p-1">
+			    <form name="update{{image._id.toString()}}images">
+			      <div class="form-group">
+			        <label for="{{image._id.toString()}}series_name">Series:</label>
+			        <input class="form-control" type="text" id="{{image._id.toString()}}series_name" name="{{image._id.toString()}}series_name" value="{{image.series.name}}"/>
+			      </div>
+			      <div class="form-group">
+			        <label for="{{image._id.toString()}}sequence">Position:</label>
+			        <input class="form-control" type="text" id="{{image._id.toString()}}sequence" name="{{image._id.toString()}}sequence" value="{{image.series.sequence}}"/>
+			      </div>
+			      <button type="button" class="button btn-primary" onClick="setSequenceGallery('{{image._id.toString()}}');">Update</button>
+			    </form>
+			  </div>
+			  {% endif %}
+	        </div>
+	      </div>
+	  {% if (loop.index % 6) == 0 %}
 		</div>
-		{% if (loop.index % 5) == 0 %}
-		<br/>
-		{% endif %}
+	  {% endif %}
 	{% endfor %}
-		<div class="pagination" id="pagination"/>
+	  <div class="row">
+	    <div class="col d-flex justify-content-end">
+	      <div class="pagination" id="pagination"></div>
+	    </div>
+	  </div>
 	</div>
 {% endblock %}

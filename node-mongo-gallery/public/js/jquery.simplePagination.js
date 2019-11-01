@@ -159,7 +159,7 @@ methods.destroy.call(this);
 
 tagName = (typeof this.prop === 'function') ? this.prop('tagName') : this.attr('tagName');
 
-var $panel = tagName === 'UL' ? this : $('<ul></ul>').appendTo(this);
+var $panel = tagName === 'UL' ? this : $('<ul class="pagination"></ul>').appendTo(this);
 
 // Generate Prev link
 if (o.prevText) {
@@ -179,7 +179,7 @@ for (i = 0; i < end; i++) {
 methods._appendItem.call(this, i);
 }
 if (o.edges < interval.start && (interval.start - o.edges != 1)) {
-$panel.append('<li class="disabled"><span class="ellipse">' + o.ellipseText + '</span></li>');
+$panel.append('<li class="page-item disabled"><a href="#" class="page-link">' + o.ellipseText + '</a></li>');
 } else if (interval.start - o.edges == 1) {
 methods._appendItem.call(this, o.edges);
 }
@@ -191,7 +191,7 @@ for (i = o.pages - 1; i >= begin; i--) {
 methods._appendItem.call(this, i);
 }
 if (o.pages - o.edges > interval.end && (o.pages - o.edges - interval.end != 1)) {
-$panel.append('<li class="disabled"><span class="ellipse">' + o.ellipseText + '</span></li>');
+$panel.append('<li class="page-item disabled"><a href="#" class="page-link">' + o.ellipseText + '</a></li>');
 } else if (o.pages - o.edges - interval.end == 1) {
 methods._appendItem.call(this, interval.end);
 }
@@ -213,7 +213,7 @@ methods._appendItem.call(this, i);
 if (!o.invertPageOrder) {
 if (interval.end < o.pages && o.edges > 0) {
 if (o.pages - o.edges > interval.end && (o.pages - o.edges - interval.end != 1)) {
-$panel.append('<li class="disabled"><span class="ellipse">' + o.ellipseText + '</span></li>');
+$panel.append('<li class="page-item disabled"><a href="#" class="page-link">' + o.ellipseText + '</a></li>');
 } else if (o.pages - o.edges - interval.end == 1) {
 methods._appendItem.call(this, interval.end);
 }
@@ -225,7 +225,7 @@ methods._appendItem.call(this, i);
 } else {
 if (interval.start > 0 && o.edges > 0) {
 if (o.edges < interval.start && (interval.start - o.edges != 1)) {
-$panel.append('<li class="disabled"><span class="ellipse">' + o.ellipseText + '</span></li>');
+$panel.append('<li class="page-item disabled"><a href="#" class="page-link">' + o.ellipseText + '</a></li>');
 } else if (interval.start - o.edges == 1) {
 methods._appendItem.call(this, o.edges);
 }
@@ -255,7 +255,7 @@ end: Math.ceil(o.currentPage > o.halfDisplayed ? Math.min(o.currentPage + o.half
 },
 
 _appendItem: function(pageIndex, opts) {
-var self = this, options, $link, o = self.data('pagination'), $linkWrapper = $('<li></li>'), $ul = self.find('ul');
+var self = this, options, $link, o = self.data('pagination'), $linkWrapper = $('<li class="page-item"></li>'), $ul = self.find('ul');
 
 pageIndex = pageIndex < 0 ? 0 : (pageIndex < o.pages ? pageIndex : o.pages - 1);
 
@@ -276,7 +276,7 @@ $linkWrapper.addClass('disabled');
 } else {
 $linkWrapper.addClass('active');
 }
-$link = $('<span class="current">' + (options.text) + '</span>');
+$link = $('<a class="page-link" href="#">' + (options.text) + '</a>');
 } else {
 $link = $('<a href="' + o.hrefTextPrefix + (pageIndex + 1) + o.hrefTextSuffix + '" class="page-link">' + (options.text) + '</a>');
 $link.click(function(event){

@@ -16,7 +16,7 @@ config.system.reservedTags = ['new','deleted','untagged'];
 config.site = {};
 
 // number of thumbnails to show per page
-config.site.imagesPerPage = 20;
+config.site.imagesPerPage = 18;
 
 // comment permissions
 config.site.allowComments = true;
