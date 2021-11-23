@@ -18,20 +18,20 @@
   "license": "MIT",
   "readmeFilename": "README.md",
   "dependencies": {
-    "async": "^3.1.0",
+    "async": "^3.2.0",
     "bcrypt-nodejs": "latest",
     "body-parser": "~1.19.0",
-    "bootstrap": "^4.3.1",
+    "bootstrap": "^4.5.2",
     "connect-flash": "~0.1.1",
-    "connect-mongodb-session": "~2.2.0",
+    "connect-mongodb-session": "^3.1.1",
     "consolidate": "~0.9.1",
     "express": "4.17.1",
     "express-session": "~1.16.2",
-    "jquery": "^3.4.1",
-    "mongodb": "^3.3.3",
+    "jquery": "^3.5.1",
+    "mongodb": "^3.6.2",
     "passport": "~0.1.17",
     "passport-local": "~0.1.6",
     "swig": "^1.4.2",
-    "validator": "11.0.0"
+    "validator": "^13.7.0"
   }
 }
