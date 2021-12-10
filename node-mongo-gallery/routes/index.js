@@ -53,7 +53,7 @@ module.exports = exports = function(app, db, passport) {
 			params.sortby = sanitize(req.body.sortby).toLowerCase();
 		}
 		if (req.body.series !== undefined) {
-			params.series = sanitize(req.body.series);
+			params.series = sanitize(req.body.series, sanitizers.allow_spaces);
 		}
 		getGallery(params,req,res,db);
 	});
@@ -69,7 +69,7 @@ module.exports = exports = function(app, db, passport) {
 			params.sortby = sanitize(req.query.sortby).toLowerCase();
 		}
 		if (req.query.series !== undefined) {
-			params.series = sanitize(req.query.series);
+			params.series = sanitize(req.query.series, sanitizers.allow_spaces);
 		}
 		getGallery(params,req,res,db);
 	});
@@ -79,7 +79,7 @@ module.exports = exports = function(app, db, passport) {
 		if ((req.query.id === undefined)&&(req.query.series === undefined)) {
 			res.render('image',{'error':'Invalid parameter error'});
 		} else if (req.query.id === undefined) {
-			gallery.getSeriesImage(sanitize(req.query.series).toLowerCase()
+			gallery.getSeriesImage(sanitize(req.query.series, sanitizers.allow_spaces).toLowerCase()
 					              ,sanitize(req.query.sequence)
 					              ,function(err,result) {
 									if (err) {
@@ -229,7 +229,7 @@ module.exports = exports = function(app, db, passport) {
 			var gallery = new Gallery(db);
 			gallery.setSequence(sanitize(req.query.id).toLowerCase()
 					           ,sanitize(req.query.sequence)
-					           ,sanitize(req.query.series_name)
+					           ,sanitize(req.query.series_name, sanitizers.allow_spaces)
 					           ,function(err) {
 				if (err) {
 					res.jsonp({'status':'error','error':err.message});
@@ -328,7 +328,7 @@ module.exports = exports = function(app, db, passport) {
 		} else {
 			var gallery = new Gallery(db);
 			gallery.massAddSeries(sanitize(req.query.ids,sanitizers.allow_commas).toLowerCase(),
-							      sanitize(req.query.seriesname).toLowerCase(),
+							      sanitize(req.query.seriesname,sanitizers.allow_spaces).toLowerCase(),
 							      function(err) {
 				if (err) {
 					res.jsonp({'status':'error','error':err.message});
