@@ -151,8 +151,8 @@ div.selectordeselect {
 	  {% endif %}
 	      <div class="col-2">
 	        <div class="card">
-	          <a href="/image?id={{image._id.toString()}}">
 	          <div class="masstagbox"><input type="checkbox" class="massselectbox" id="image{{image._id.toString()}}" value="{{image._id.toString()}}"/></div>
+	          <a href="/image?id={{image._id.toString()}}">
 		        <img src="/thumbnails/{{image.thumbnail}}"/>
 		      </a>
 		      {% if image.series %}
