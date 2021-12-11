@@ -79,7 +79,7 @@ module.exports = exports = function(app, db, passport) {
 		if ((req.query.id === undefined)&&(req.query.series === undefined)) {
 			res.render('image',{'error':'Invalid parameter error'});
 		} else if (req.query.id === undefined) {
-			gallery.getSeriesImage(sanitize(req.query.series, sanitizers.allow_spaces).toLowerCase()
+			gallery.getSeriesImage(sanitize(req.query.series, sanitizers.allow_spaces)
 					              ,sanitize(req.query.sequence)
 					              ,function(err,result) {
 									if (err) {

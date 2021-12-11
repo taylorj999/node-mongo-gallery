@@ -26,6 +26,24 @@
 		setSequence(id,series_name,sequence);
 	}
 </script>
+  {% if image %}
+	{% if image.series.count >= 1 %}
+<script>
+ // left-right keypad for navigation
+$(window).keydown(function(e) {
+    if(e.which === 39) {
+    	{% if image.series.sequence < image.series.count %}
+    	window.location.href = '/image?series={{image.series.name}}&sequence={{image.series.sequence + 1}}';
+    	{% endif %}
+    } else if(e.which === 37) {
+		{% if image.series.sequence > 1 %}
+		window.location.href = '/image?series={{image.series.name}}&sequence={{image.series.sequence - 1}}';
+		{% endif %}
+    }
+});
+</script>
+	{% endif %}
+  {% endif %}
 {% endblock %}
 
 {% block title %}Image{% endblock %}
