@@ -190,3 +190,29 @@ function setSequence(id,series_name,sequence) {
 	});
 	return false;
 }
+
+function autoGenSeriesNumber(series_name) {
+	if (series_name===undefined) {
+		$("#alert").append("Series name cannot be empty.");
+		return false;
+	}
+	$.ajax({
+		url: "/autogenseriesnumber-api",
+		data: {
+			'series_name':series_name
+		},
+		async: false,
+		dataType: "jsonp",
+		success: function(data) {
+			if (data.status === "success") {
+				$("#alert").append("Sequences updated.");
+			} else {
+				$("#alert").append("Error from API: " + data.error);
+			}
+		},
+		error: function(xhr,textStatus,errorThrown) {
+			$("#alert").append("Error on Ajax call:" + textStatus);
+		}
+	});
+	return false;
+}

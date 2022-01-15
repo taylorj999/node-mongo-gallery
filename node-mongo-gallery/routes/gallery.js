@@ -186,6 +186,25 @@ Gallery.prototype.setSequence = function setSequence(image_id, sequence, series_
 	                         });
 };
 
+Gallery.prototype.autoGenSeriesNumber = function autoGenSeriesNumber(series_name, callback) {
+	var self=this;
+	console.log(series_name);
+	self.images.aggregate([{'$match':{'series.name':series_name,'deleted':{'$ne':true}}},
+						   {'$sort':{'series.sequence':1, 'date':1}}])
+						 .toArray(function(err,result) {
+				        	   if (err) {
+				        		   return callback(err);
+				        	   } else if (result.length===0) {
+				        		   return callback(null);
+				        	   } else {
+				        		   for (let x=0;x<result.length;x++) {
+				        			   self.images.updateOne({'_id':result[x]._id},{$set:{'series.sequence':x+1}});
+				        		   }
+				        		   self.updateSeriesCount(series_name, callback);
+				        	   }
+				           });
+};
+
 Gallery.prototype.massAddSeries = function massAddSeries(image_ids, series_name, callback) {
 	var self=this;
 	var upd_ids = image_ids.split(',');
