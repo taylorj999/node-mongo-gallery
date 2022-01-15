@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+  <%- include('partials/header', {'page': page}) %>
+</head>
+<body>
+  <%- include('partials/navbar', {'config':config, 'user':user}) %>
+  <div id="centerpage" class="container-fluid">
+  	<div class="row">
+	  <div id="leftcolumn" class="col-2">
+        <%- include('partials/searchbox', {'config':config, 'page':page, 'search':search}) %>
+      </div>
+      <div id="main" class="col">
+		<h1>Create Account</h1>
+		<div id="alert"><%=errorMsg%></div>
+	<!-- LOGIN FORM -->
+	<form name="signup" action="/signup" method="post">
+		<div>
+			<label>Email</label>
+			<input type="text" name="email">
+		</div>
+		<div>
+			<label>Password</label>
+			<input type="password" name="password">
+		</div>
+
+		<button type="submit">Signup</button>
+	</form>
+
+	<hr>
+
+	<p>Have an account? <a href="/login">Login</a></p>
+	<p>Or go <a href="/">home</a>.</p>
+	  </div>
+	</div>
+  </div>
+  <%- include('partials/footer') %>
+</body>
+</html>
+      

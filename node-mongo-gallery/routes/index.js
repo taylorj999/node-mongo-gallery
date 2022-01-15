@@ -9,11 +9,16 @@ module.exports = exports = function(app, db, passport) {
 	"use strict";
 	
 	app.get('/',function(req,res) {
-		res.render('index', {'user':req.user});
+		let pageParams = getDefaultParameters(req);
+		pageParams["page"] = "index";
+		res.render('index', pageParams);
 	});
 	
 	app.get('/login', function(req,res) {
-		res.render('login', { message: req.flash('loginMessage')});
+		let pageParams = getDefaultParameters(req);
+		pageParams["page"] = "login";
+		pageParams["errorMsg"] = req.flash('loginMessage');
+		res.render('login', pageParams);
 	});
 
 	app.post('/login', passport.authenticate('local-login', {
@@ -23,7 +28,10 @@ module.exports = exports = function(app, db, passport) {
 	}));
 
 	app.get('/signup', function(req, res) {
-		res.render('signup', { message: req.flash('signupMessage')});
+		let pageParams = getDefaultParameters(req);
+		pageParams["page"] = "signup";
+		pageParams["errorMsg"] = req.flash('signupMessage');
+		res.render('signup', pageParams);
 	});
 	
 	app.post('/signup', passport.authenticate('local-signup', {
@@ -33,7 +41,9 @@ module.exports = exports = function(app, db, passport) {
 	}));
 
 	app.get('/profile', isLoggedIn, function(req, res){
-		res.render('profile',{'user':req.user});
+		let pageParams = getDefaultParameters(req);
+		pageParams["page"] = "profile";
+		res.render('profile',pageParams);
 	});
 	
 	app.get('/logout', function(req,res) {
@@ -75,61 +85,54 @@ module.exports = exports = function(app, db, passport) {
 	});
 	
 	app.get('/image', function(req,res) {
+		let pageParams = getDefaultParameters(req);
+		pageParams["page"] = "image";
 		var gallery = new Gallery(db);
 		if ((req.query.id === undefined)&&(req.query.series === undefined)) {
-			res.render('image',{'error':'Invalid parameter error'});
+			pageParams["errorMsg"] = "Invalid parameter error";
+			res.render('image',pageParams);
 		} else if (req.query.id === undefined) {
 			gallery.getSeriesImage(sanitize(req.query.series, sanitizers.allow_spaces)
 					              ,sanitize(req.query.sequence)
 					              ,function(err,result) {
 									if (err) {
-										res.render('image',{'error':err.message
-											               ,'image':{}
-											               ,'user':req.user
-											               ,'config':config.site});
-									    return;
+										pageParams["errorMsg"] = err.message;
+										pageParams["data"] = {};
 									} else {
-										res.render('image',{'image':result.value
-								                           ,'user':req.user
-								                           ,'config':config.site});
-										return;
+										pageParams["data"] = result.value;
 									}
+									return res.render('image', pageParams);
 			});
 		} else {
 			gallery.getImage(sanitize(req.query.id).toLowerCase(), function(err,result) {
 				if (err) {
-					res.render('image',{'error':err.message
-								   	   ,'image':{}
-								       ,'user':req.user
-								       ,'config':config.site});
-				    return;
+					pageParams["errorMsg"] = err.message;
+					pageParams["data"] = {};
 			    } else {
-				    res.render('image',{'image':result.value
-								       ,'user':req.user
-								       ,'config':config.site});
-				    return;
+			    	pageParams["data"] = result.value;
 			    }
+				return res.render('image', pageParams);
 			});
 		}
 	});
 	
 	app.get('/taglist', function(req,res) {
+		let pageParams = getDefaultParameters(req);
+		pageParams["page"] = "tags";
 		var tags = new Tags(db);
 		tags.getTagList(function (err, result) {
 			if (err) {
-				res.render('tags',{'error':err.message
-								  ,'user':req.user
-								  ,'config':config.site});
-				return;
+				pageParams["errorMsg"] = err.message;
 			} else {
-				res.render('tags',{'taglist':result
-								  ,'user':req.user
-								  ,'config':config.site});
+				pageParams["data"] = result;
 			}
+			return res.render('tags', pageParams);
 		});
 	});
 
 	app.post('/serieslist', function(req,res) {
+		let pageParams = getDefaultParameters(req);
+		pageParams["page"] = "serieslist";
 		var gallery = new Gallery(db);
 		var page = 1;
 		if (req.body.seriespage !== undefined) {
@@ -139,20 +142,18 @@ module.exports = exports = function(app, db, passport) {
 							  config.site.imagesPerPage,
 				              function (err, result, count) {
 			if (err) {
-				res.render('serieslist',{'error':err.message
-								  ,'user':req.user
-								  ,'config':config.site});
-				return;
+				pageParams["errorMsg"] = err.message;
 			} else {
-				res.render('serieslist',{'serieslist':result
-								  ,'user':req.user
-								  ,'config':config.site
-								  ,'count':count
-								  ,'page':page});
+				pageParams["data"]["count"] = count;
+				pageParams["data"]["serieslist"] = result;
+				pageParams["search"]["page"] = page;
 			}
+			return res.render('serieslist', pageParams);
 		});
 	});
 	app.get('/serieslist', function(req,res) {
+		let pageParams = getDefaultParameters(req);
+		pageParams["page"] = "serieslist";
 		var gallery = new Gallery(db);
 		var page = 1;
 		if (req.query.seriespage !== undefined) {
@@ -162,39 +163,33 @@ module.exports = exports = function(app, db, passport) {
 							  config.site.imagesPerPage,
 	              			  function (err, result, count) {
 			if (err) {
-				res.render('serieslist',{'error':err.message
-								  ,'user':req.user
-								  ,'config':config.site});
-				return;
+				pageParams["errorMsg"] = err.message;
 			} else {
-				res.render('serieslist',{'serieslist':result
-								  ,'user':req.user
-								  ,'config':config.site
-								  ,'count':count
-								  ,'page':page});
+				pageParams["data"]["count"] = count;
+				pageParams["data"]["serieslist"] = result;
+				pageParams["search"]["page"] = page;
+				console.log(JSON.stringify(pageParams));
 			}
+			return res.render('serieslist', pageParams);
 		});
 	});
 
 	
 	app.post('/addComment',function(req,res) {
+		let pageParams = getDefaultParameters(req);
+		pageParams["page"] = "image";
 		var comments = new Comments(db);
 		comments.addComment(req.user
 				           ,sanitize(req.body.comment,sanitizers.comments)
 				           ,sanitize(req.body.id).toLowerCase()
 				           ,function(err,result) {
 			if (err) {
-				res.render('image',{'error':err.message
-								   ,'image':{}
-								   ,'user':req.user
-								   ,'config':config.site});
-				return;
-			} else {
-				res.render('image',{'image':result.value
-								   ,'user':req.user
-								   ,'config':config.site});
-				return;
-			}
+				pageParams["errorMsg"] = err.message;
+				pageParams["data"] = {};
+		    } else {
+		    	pageParams["data"] = result.value;
+		    }
+			return res.render('image', pageParams);
 		});
 	});
 	
@@ -359,9 +354,30 @@ module.exports = exports = function(app, db, passport) {
 			});
 		}
 	});
+	
+	app.get('/autogenseriesnumber-api',function(req,res) {
+		if (req.query.series_name === undefined) {
+			res.jsonp({'status':'error','error':'Invalid parameter error.'});
+			return;
+		} else {
+			var gallery = new Gallery(db);
+			gallery.autoGenSeriesNumber(sanitize(req.query.series_name,sanitizers.allow_spaces),
+										function(err) {
+				if (err) {
+					res.jsonp({'status':'error','error':err.message});
+					return;
+				} else {
+					res.jsonp({'status':'success'});
+					return;
+				}
+			});
+		}
+	});
 };
 
 function getGallery(query_params,req,res,db) {
+	let pageParams = getDefaultParameters(req);
+	pageParams["page"] = "image";
 	var gallery = new Gallery(db);
 	var tags = null;
 	if (query_params.tags !== undefined) {
@@ -382,26 +398,49 @@ function getGallery(query_params,req,res,db) {
 		gallery.buildQueryOptions(query_params.page, query_params.sortby, function(options) {
 			gallery.getImages(params, options, function(err, data, count, taglist) {
 				if (err) {
-					res.render('gallery',{'error':err.message 
-									 	,'images':{}
-									 	,'user':req.user});
-					return;
+					pageParams["errorMsg"] = err.message;
+					pageParams["data"] = {};
 				} else {
-					res.render('gallery',{'images':data
-									 	,'user':req.user
-									 	,'tags':query_params.tags
-									 	,'count':count
-									 	,'page':query_params.page
-									 	,'config':config.site
-									 	,'sortby':query_params.sortby
-									 	,'series':query_params.series
-									 	,'taglist':taglist});
-					return;
+					pageParams["data"]["images"] = data;
+					pageParams["data"]["count"] = count;
+					pageParams["data"]["taglist"] = taglist;
+					pageParams["search"]["tags"] = query_params.tags;
+					pageParams["search"]["sortby"] = query_params.sortby;
+					pageParams["search"]["series"] = query_params.series;
+					pageParams["search"]["page"] = query_params.page;
 				}
+				return res.render('gallery', pageParams);
 			});
 		});
 	});
 };
+
+function getDefaultParameters(req) {
+	let defaultObj = {
+		'page':'',
+		'errorMsg':'',
+		'config':config.site,
+		'user':null,
+		'search':{},
+		'data':{}
+	};
+	if (hasValue(req.user)) {
+		defaultObj["user"] = req.user;
+	}
+	return defaultObj;
+}
+
+function hasValue(varValue) {
+	if (varValue === undefined) {
+		return false
+	} else if (varValue === null) {
+		return false;
+	} else if (typeof varValue === 'string' && varValue.length==0) {
+		return false;
+	} else {
+		return true;
+	}
+}
 
 //input sanitization; this should cover the majority of user input fields
 //the sanitizers are defined in /config/sanitizers.js

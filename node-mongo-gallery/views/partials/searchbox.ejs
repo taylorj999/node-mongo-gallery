@@ -1,0 +1,28 @@
+<%
+   let searchTags = "";
+   if (search["tags"] !== null) searchTags = search["tags"];
+   let searchSortBy = "";
+   if (search["sortby"] !== null) searchSortBy = search["sortby"];
+   let searchPage = "1";
+   if (search["page"] !== null) searchPage = search["page"];
+%>
+
+		  <form name="search" method="GET" action="/gallery">
+		    <div class="form-group">
+		      <label for="formtags">Image Search</label>
+			  <input type="text" class="form-control" name="tags" id="formtags" value="<%=searchTags%>"/>
+			</div>
+			<input type="hidden" name="page" value="<%=searchPage%>"/>
+			<% if (search["series"]) { %>
+				<input type="text" class="form-control" name="series" value="<%=search["series"]%>"/>
+			<% } %>
+			<div class="form-group">
+			  <label for="sortby">Search Order</label>
+			  <select name="sortby" id="sortby" class="form-control">
+				<option value="recent" <% if (searchSortBy === 'recent') { %>SELECTED<% } %>>Most recent</option>
+				<option value="last" <% if (searchSortBy === 'last') { %>SELECTED<% } %>>Least viewed</option>
+				<option value="series" <% if (searchSortBy === 'series') { %>SELECTED<% } %>>Series sequence</option>
+			  </select>
+			</div>
+		  </form>
+		<input type="button" name="submit" value="Search" class="btn btn-primary" onClick="document.forms.search.submit();"/>

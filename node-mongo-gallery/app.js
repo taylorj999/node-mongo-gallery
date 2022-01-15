@@ -8,8 +8,6 @@ var express = require('express')
   , user = require('./routes/user')
   , http = require('http')
   , path = require('path')
-  , consolidate = require('consolidate')
-  , swig = require('swig')
   , app = express()
   , passport = require('passport')
   , flash 	 = require('connect-flash')
@@ -17,6 +15,10 @@ var express = require('express')
   , bodyParser = require('body-parser')
   , expressSession = require('express-session')
   , MongoDBStore = require('connect-mongodb-session')(expressSession);
+
+//  , consolidate = require('consolidate')
+//, swig = require('swig')
+
 
 MongoClient.connect(config.system.mongoConnectString, { useUnifiedTopology: true }, function(err, client) {
     "use strict";
@@ -31,9 +33,10 @@ MongoClient.connect(config.system.mongoConnectString, { useUnifiedTopology: true
     app.use(express.static(path.join(__dirname, "images")));
     
     // Register our templating engine
-    app.engine('html', consolidate.swig);
-    app.set('view engine', 'html');
+    // app.engine('html', consolidate.swig);
+    // app.set('view engine', 'html');
     app.set('views', __dirname + '/views');
+    app.set('view engine', 'ejs');
     
     // Express middleware to populate 'req.body' so we can access POST variables
     // https://www.npmjs.com/package/body-parser

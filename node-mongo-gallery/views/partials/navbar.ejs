@@ -1,0 +1,16 @@
+	<div id="topnav" class="nav navbar navbar-expand-lg navbar-dark bg-primary" role="navigation">
+      <div class="navbar-nav">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+		<% if (user!==null && user["local"]!==null) { %>
+			<a href="#" class="navbar-brand">Welcome, <%=user.local.email%>.</a>
+			<a href="/profile" class="nav-item nav-link">My Profile</a>
+			<a href="/logout" class="nav-item nav-link">Log Out</a>
+		<% } else {%>
+			<a href="/login" class="nav-item nav-link">Log In</a> <a href="/signup" class="nav-item nav-link">Create Account</a>
+		<% } %>
+		<a href="/serieslist" class="nav-item nav-link">Series</a>
+		<a href="/taglist" class="nav-item nav-link">Tags</a>
+	  </div>
+	</div>

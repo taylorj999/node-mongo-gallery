@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+<head>
+  <%- include('partials/header', {'page': page}) %>
+</head>
+<body>
+  <%- include('partials/navbar', {'config':config, 'user':user}) %>
+  <div id="centerpage" class="container-fluid">
+  	<div class="row">
+	  <div id="leftcolumn" class="col-2">
+        <%- include('partials/searchbox', {'config':config, 'page':page, 'search':search}) %>
+      </div>
+      <div id="main" class="col">
+		<div id="alert"><%=errorMsg%></div>
+		<ul>
+<% for (let x=0;x<data.length;x++) {
+     let tag = data[x]; %>
+<li><%=tag._id%> (<%=tag.count%>)</li>
+<% } %>
+</ul>
+	  </div>
+	</div>
+  </div>
+  <%- include('partials/footer') %>
+</body>
+</html>
+      

@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+<head>
+  <%- include('partials/header', {'page': page}) %>
+</head>
+<body>
+  <%- include('partials/navbar', {'config':config, 'user':user}) %>
+  <div id="centerpage" class="container-fluid">
+  	<div class="row">
+	  <div id="leftcolumn" class="col-2">
+        <%- include('partials/searchbox', {'config':config, 'page':page, 'search':search}) %>
+      </div>
+      <div id="main" class="col">
+		<div id="alert"><%=errorMsg%></div>
+	<div class="row">
+
+		<!-- LOCAL INFORMATION -->
+		<div class="col-sm-6">
+			<div class="well">
+				<h3><span class="fa fa-user"></span> Local</h3>
+
+					<p>
+						<strong>id</strong>: <%=user._id.toString()%><br>
+						<strong>email</strong>: <%=user.local.email%><br>
+					</p>
+
+			</div>
+		</div>
+	</div>
+	  </div>
+	</div>
+  </div>
+  <%- include('partials/footer') %>
+</body>
+</html>
+      

@@ -1,0 +1,212 @@
+<!doctype html>
+<html>
+<head>
+  <%- include('partials/header', {'page': page}) %>
+<script type="text/javascript" src="/js/jquery.simplePagination.js"></script>
+<script>
+$( document ).ready(function() {
+    $("#pagination").pagination({
+        items: <%=data.count%>,
+        itemsOnPage: <%=config.imagesPerPage%>,
+        cssStyle: 'light-theme',
+        currentPage: $('input[name="page"]').val(),
+        onPageClick: function (pageNum) {
+        	$('input[name="page"]').val(pageNum);
+        	document.forms.search.submit();
+        }
+    });
+});
+</script>
+<script>
+function showEdit() {
+	var editDivs = document.getElementsByClassName("galleryeditbox");
+	for (var i=0; i<editDivs.length; i++) {
+		editDivs[i].style.display = "block";
+	}
+	var tagDivs = document.getElementsByClassName("masstagbox");
+	for (var i=0; i<tagDivs.length; i++) {
+		tagDivs[i].style.display = "block";
+	}
+}
+function setSequenceGallery(id) {
+	var sequence = $("input[name="+id+"sequence]").val();
+	var series_name = $("input[name="+id+"series_name]").val();
+	setSequence(id,series_name,sequence);
+}
+function callMassTagAPI() {
+	var imageSelectBoxes = document.getElementsByClassName("massselectbox");
+	var ids = "";
+	var tagname = $("input[name=masstagname]").val();
+	for (var i=0; i<imageSelectBoxes.length; i++) {
+		if (imageSelectBoxes[i].checked) {
+			if (ids.length == 0) {
+				ids = imageSelectBoxes[i].value;
+			} else {
+				ids = ids + "," + imageSelectBoxes[i].value;
+			}
+		}
+	}
+	addTagMass(ids,tagname);
+}
+function callMassSeriesAPI() {
+	var imageSelectBoxes = document.getElementsByClassName("massselectbox");
+	var ids = "";
+	var seriesname = $("input[name=massseriesname]").val();
+	for (var i=0; i<imageSelectBoxes.length; i++) {
+		if (imageSelectBoxes[i].checked) {
+			if (ids.length == 0) {
+				ids = imageSelectBoxes[i].value;
+			} else {
+				ids = ids + "," + imageSelectBoxes[i].value;
+			}
+		}
+	}
+	addSeriesMass(ids,seriesname);
+}
+function callRemoveNewFlag() {
+	var imageSelectBoxes = document.getElementsByClassName("massselectbox");
+	var ids = "";
+	for (var i=0; i<imageSelectBoxes.length; i++) {
+		if (imageSelectBoxes[i].checked) {
+			if (ids.length == 0) {
+				ids = imageSelectBoxes[i].value;
+			} else {
+				ids = ids + "," + imageSelectBoxes[i].value;
+			}
+		}
+	}
+	removeNewFlag(ids);
+}
+function callAutoGenSeriesNumber(series) {
+	autoGenSeriesNumber(series);
+}
+function clearSelected() {
+	var imageSelectBoxes = document.getElementsByClassName("massselectbox");
+	for (var i=0; i<imageSelectBoxes.length; i++) {
+		imageSelectBoxes[i].checked = false;
+	}
+}
+function selectAll() {
+	var imageSelectBoxes = document.getElementsByClassName("massselectbox");
+	for (var i=0; i<imageSelectBoxes.length; i++) {
+		imageSelectBoxes[i].checked = true;
+	}
+}
+</script>
+<style>
+div.galleryeditbox {
+	display: none;
+	font-size: 0.875em;
+}
+div.masstagbox {
+	display: none;
+}
+input.massselectbox {
+	align: left;
+}
+div.selectordeselect {
+	display: none;
+}
+</style>
+</head>
+<body>
+  <%- include('partials/navbar', {'config':config, 'user':user}) %>
+  <div id="centerpage" class="container-fluid">
+  	<div class="row">
+	  <div id="leftcolumn" class="col-2">
+        <%- include('partials/searchbox', {'config':config, 'page':page, 'search':search}) %>
+	<div class="taglist border border-info rounded mt-5">
+	<% if (data["taglist"] !== null) { 
+	     for (let x=0; x<data["taglist"].length;x++) { 
+	       let tag = data["taglist"][x]; %>
+		<div class="tag" id="<%=tag._id%>"><a href="/gallery?tags=<%=tag._id%>&page=1"><%=tag._id%></a></div>
+    <%   }
+       } %>
+	</div>
+	<div class="showedit mt-2">
+	    <button type="button" class="button btn-primary" onClick="showEdit();">Show Edit Tools</button>
+	</div>
+	<div class="masstagbox border border-info rounded mt-2 p-1">
+		<form name="masstag">
+		  <div class="form-group">
+		    <label for="masstagname">Tag</label>
+			<input type="text" class="form-control" id="masstagname" name="masstagname" value=""/>
+		  </div>
+ 		  <button type="button" class="button btn-primary" onClick="callMassTagAPI();">Tag selected images</button>
+		</form>
+		<form name="massseries">
+		  <div class="form-group">
+		    <label for="massseriesname">Series</label>
+			<input type="text" class="form-control" name="massseriesname" value=""/>
+		  </div>
+		  <button type="button" class="button btn-primary" onClick="callMassSeriesAPI();">Add series to selected images</button>
+		</form>
+		<% if (search["series"] !== null) { %>
+		<div class="mt-2">
+		  <button type="button" class="button btn-primary" onClick="callAutoGenSeriesNumber('<%=search["series"]%>');">Autogenerate series index</button>
+		</div>
+		<% } %>
+		<div class="mt-2">
+		  <button type="button" class="button btn-primary" onClick="callRemoveNewFlag();">Mark images as not new</button>
+		</div>
+	</div>
+	<div class="masstagbox border border-info rounded mt-2 p-1">
+		<button type="button" class="button btn-primary" onClick="clearSelected();">Clear selection</button>
+		<button type="button" class="button btn-primary" onClick="selectAll();">Select all</button>
+	</div>
+      </div>
+      <div id="main" class="col">
+		<div id="alert"><%=errorMsg%></div>
+	<div class="gallery">
+	<% if (data["images"] !== null) {
+	     let x=0;
+	     for (x=0;x<data["images"].length;x++) { 
+	       let image = data["images"][x]; %>
+	  <% if ((x % 6) == 0) { %>
+	    <div class="row mb-1">
+	  <% } %>
+	      <div class="col-2">
+	        <div class="card">
+	          <div class="masstagbox"><input type="checkbox" class="massselectbox" id="image<%=image._id.toString()%>" value="<%=image._id.toString()%>"/></div>
+	          <a href="/image?id=<%=image._id.toString()%>">
+		        <img src="/thumbnails/<%=image.thumbnail%>"/>
+		      </a>
+		      <% if ((image["series"] !== null) && (image["series"] !== undefined)) { %>
+			  <div class="galleryeditbox p-1">
+			    <form name="update<%=image._id.toString()%>images">
+			      <div class="form-group">
+			        <label for="<%=image._id.toString()%>series_name">Series:</label>
+			        <input class="form-control" type="text" id="<%=image._id.toString()%>series_name" name="<%=image._id.toString()%>series_name" value="<%=image.series.name%>"/>
+			      </div>
+			      <div class="form-group">
+			        <label for="<%=image._id.toString()%>sequence">Position:</label>
+			        <input class="form-control" type="text" id="<%=image._id.toString()%>sequence" name="<%=image._id.toString()%>sequence" value="<%=image.series.sequence%>"/>
+			      </div>
+			      <button type="button" class="button btn-primary" onClick="setSequenceGallery('<%=image._id.toString()%>');">Update</button>
+			    </form>
+			  </div>
+			  <% } %>
+	        </div>
+	      </div>
+	  <% if ((x % 6) == 5) { %>
+		</div>
+	  <% } %>
+	<% }
+	   if ((x % 6) !== 5) { %>
+	   </div>
+	<% } 
+	 }
+	%>
+	  <div class="row">
+	    <div class="col d-flex justify-content-end">
+	      <div class="pagination" id="pagination"></div>
+	    </div>
+	  </div>
+	</div>
+	  </div>
+	</div>
+  </div>
+  <%- include('partials/footer') %>
+</body>
+</html>
+      
